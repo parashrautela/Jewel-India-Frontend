@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import RetailerCatalogueSearch from "./RetailerCatalogueSearch";
+import { searchableProducts, productSearchImage } from "../../lib/catalogue/search.mjs";
 
 const ProductInfoModal = dynamic(
   () => import("../employee/ProductInfoModal").then((mod) => mod.ProductInfoModal),
@@ -14,19 +16,16 @@ function formatWeight(val) {
   return `${Number(val).toFixed(2)}g`;
 }
 
-function ProductCard({ product, isSelected, onToggle, onClick }) {
+function ProductCard({ product, isSelected, onToggle, onClick, disabled }) {
   const [imgError, setImgError] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const imageUrl = (product.showcase_image_urls && product.showcase_image_urls.length > 0 ? product.showcase_image_urls[0] : null) ||
-                   (product.generated_image_urls && product.generated_image_urls.length > 0 ? product.generated_image_urls[0] : null) ||
-                   product.processed_image_url ||
-                   product.raw_image_url;
+  const imageUrl = productSearchImage(product);
   const title = product.title || product.jewellery_type || "Untitled";
 
   const handleToggle = async (e) => {
     e.stopPropagation();
-    if (isUpdating) return;
+    if (isUpdating || disabled) return;
     setIsUpdating(true);
     await onToggle(product.id, !isSelected);
     setIsUpdating(false);
@@ -64,20 +63,19 @@ function ProductCard({ product, isSelected, onToggle, onClick }) {
             {formatWeight(product.net_weight) || "20g"}
           </span>
           
-          {/* Toggle */}
-          <div 
+          {/* Selection changes only after an explicit retailer action. */}
+          <button
+            type="button"
+            role="switch"
+            aria-label={`Show ${title} to employees`}
+            aria-checked={isSelected}
+            disabled={isUpdating || disabled}
             onClick={handleToggle}
-            className="w-11 h-11 flex items-center justify-end cursor-pointer -my-3 md:my-0 md:w-auto md:h-auto"
+            data-selected={isSelected}
+            className="relative w-11 h-6 rounded-full transition-colors disabled:opacity-50 bg-[#E5E5EA] data-[selected=true]:bg-[#22C55E] focus-visible:outline-2 focus-visible:outline-offset-4"
           >
-            <button
-              disabled={isUpdating}
-              tabIndex={-1}
-              className="pointer-events-none relative w-9 h-5 rounded-full transition-colors duration-300 ease-in-out focus:outline-none disabled:opacity-50 border-none cursor-pointer bg-[#E5E5EA] data-[selected=true]:bg-[#22C55E]"
-              data-selected={isSelected}
-            >
-              <span className={`absolute top-[2px] left-[2px] bg-white w-4 h-4 rounded-full shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform duration-300 ease-in-out ${isSelected ? 'translate-x-[16px]' : 'translate-x-0'}`} />
-            </button>
-          </div>
+            <span className={`absolute top-[3px] left-[3px] bg-white w-[18px] h-[18px] rounded-full shadow-sm transition-transform ${isSelected ? 'translate-x-5' : 'translate-x-0'}`} />
+          </button>
         </div>
       </div>
     </article>
@@ -85,16 +83,17 @@ function ProductCard({ product, isSelected, onToggle, onClick }) {
 }
 
 export default function YourTasteClient({ products, selectedProductIds, categoryTabs }) {
-  const [activeCategory, setActiveCategory] = useState("all");
   const [filterState, setFilterState] = useState("all"); // "all", "selected", "unselected"
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
+  const [selectionError, setSelectionError] = useState("");
 
   
   // Local optimistic state for selections
   const [selections, setSelections] = useState(() => new Set(selectedProductIds));
 
-  const handleToggleSelection = async (productId, isSelected) => {
+  const handleToggleSelection = async (productId, isSelected, clearError = true) => {
+    if (clearError) setSelectionError("");
     setSelections(prev => {
       const newSet = new Set(prev);
       if (isSelected) newSet.add(productId);
@@ -109,80 +108,34 @@ export default function YourTasteClient({ products, selectedProductIds, category
         body: JSON.stringify({ product_id: productId, selected: isSelected })
       });
       if (!res.ok) throw new Error("Failed");
-    } catch (err) {
+      return true;
+    } catch {
+      setSelectionError("Some selections could not be saved. Please try again.");
       setSelections(prev => {
         const newSet = new Set(prev);
         if (isSelected) newSet.delete(productId);
         else newSet.add(productId);
         return newSet;
       });
+      return false;
     }
   };
 
-  // filteredProducts computed first so handleBulkToggle can reference it
-  const filteredProducts = useMemo(() => {
-    let result = products;
+  const originalProducts = useMemo(() => new Map(products.map(product => [product.id, product])), [products]);
+  const searchProducts = useMemo(() => searchableProducts(products), [products]);
+  const filterSelections = (items) => items.filter(p => filterState === "all" || (filterState === "selected" ? selections.has(p.id) : !selections.has(p.id)));
 
-    if (activeCategory !== "all") {
-      result = result.filter(p => {
-        const title = (p.title || "").toLowerCase();
-        const type = (p.jewellery_type || "").toLowerCase();
-        const cat = (p.category || "").toLowerCase();
-        const style = (p.style || "").toLowerCase();
-        
-        const baseActive = activeCategory.toLowerCase().replace(/s$/, ''); // necklace, pendant, etc.
-        
-        const fields = [title, type, cat, style];
-        const isMatch = fields.some(f => f.includes(baseActive) || f.replace(/s$/, '') === baseActive);
-        
-        if (baseActive === "mangalsutra") {
-          return isMatch || fields.some(f => f.includes("mangal"));
-        }
-        
-        return isMatch;
-      });
-    }
-
-    if (filterState === "selected") {
-      result = result.filter(p => selections.has(p.id));
-    } else if (filterState === "unselected") {
-      result = result.filter(p => !selections.has(p.id));
-    }
-
-    return result;
-  }, [products, activeCategory, filterState, selections]);
-
-  // Bulk select/deselect the CURRENTLY visible (filtered) products
-  const handleBulkToggle = async (selectAll) => {
+  // Only apply a bulk action to currently displayed results that need a change.
+  const handleBulkToggle = async (selectAll, displayedProducts) => {
     setIsBulkUpdating(true);
-    const targets = filteredProducts.map(p => p.id);
-    if (targets.length === 0) { setIsBulkUpdating(false); return; }
-
-    setSelections(prev => {
-      const newSet = new Set(prev);
-      targets.forEach(id => selectAll ? newSet.add(id) : newSet.delete(id));
-      return newSet;
-    });
-
+    setSelectionError("");
+    const targets = displayedProducts.filter(product => selections.has(product.id) !== selectAll);
     try {
-      await Promise.all(
-        targets.map(id =>
-          fetch("/api/retailer/your-taste", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ product_id: id, selected: selectAll }),
-          })
-        )
-      );
-    } catch (err) {
-      setSelections(prev => {
-        const newSet = new Set(prev);
-        targets.forEach(id => selectAll ? newSet.delete(id) : newSet.add(id));
-        return newSet;
-      });
-    } finally {
-      setIsBulkUpdating(false);
-    }
+      // Bound concurrent writes for the full catalogue.
+      for (let index = 0; index < targets.length; index += 10) {
+        await Promise.all(targets.slice(index, index + 10).map(product => handleToggleSelection(product.id, selectAll, false)));
+      }
+    } finally { setIsBulkUpdating(false); }
   };
 
   return (
@@ -200,6 +153,10 @@ export default function YourTasteClient({ products, selectedProductIds, category
       {/* Main Box Area */}
       <div className="flex flex-col gap-8 relative mt-2">
         
+        <RetailerCatalogueSearch
+          designs={searchProducts}
+          categoryOptions={categoryTabs}
+          renderCategories={(activeCategory, setActiveCategory) => <>
         {/* Categories Row */}
         <div className="flex flex-wrap gap-3 md:gap-4 justify-start pb-6 pt-4 px-2">
           {categoryTabs.map((tab) => {
@@ -243,6 +200,10 @@ export default function YourTasteClient({ products, selectedProductIds, category
           </button>
         </div>
 
+          </>}
+          renderResults={(visibleProducts, searchBusy) => {
+            const filteredProducts = filterSelections(visibleProducts.map(product => originalProducts.get(product.id)).filter(Boolean));
+            return <>
         {/* Filters + Bulk Actions bar */}
         <div className="flex flex-wrap gap-3 items-center justify-between">
           {/* Left: view-filter chips */}
@@ -266,8 +227,8 @@ export default function YourTasteClient({ products, selectedProductIds, category
           {/* Right: bulk action buttons */}
           <div className="flex gap-2 items-center">
             <button
-              onClick={() => handleBulkToggle(true)}
-              disabled={isBulkUpdating || filteredProducts.length === 0}
+              onClick={() => handleBulkToggle(true, filteredProducts)}
+              disabled={searchBusy || isBulkUpdating || filteredProducts.length === 0}
               className="flex items-center gap-2 px-4 h-11 md:h-auto py-0 md:py-2 rounded-full text-[12px] font-bold tracking-wide bg-[#22C55E] text-white hover:bg-[#16a34a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isBulkUpdating ? (
@@ -278,8 +239,8 @@ export default function YourTasteClient({ products, selectedProductIds, category
               Publish All
             </button>
             <button
-              onClick={() => handleBulkToggle(false)}
-              disabled={isBulkUpdating || filteredProducts.length === 0}
+              onClick={() => handleBulkToggle(false, filteredProducts)}
+              disabled={searchBusy || isBulkUpdating || filteredProducts.length === 0}
               className="flex items-center gap-2 px-4 h-11 md:h-auto py-0 md:py-2 rounded-full text-[12px] font-bold tracking-wide bg-gray-800 text-white hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isBulkUpdating ? (
@@ -292,24 +253,31 @@ export default function YourTasteClient({ products, selectedProductIds, category
           </div>
         </div>
 
+        {selectionError && <p role="alert" className="text-sm text-red-700">{selectionError}</p>}
+
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12 mt-4">
-          {filteredProducts.map((p) => (
+          {!searchBusy && filteredProducts.map((p) => (
             <ProductCard 
               key={p.id} 
               product={p} 
               isSelected={selections.has(p.id)}
+              disabled={isBulkUpdating}
               onToggle={handleToggleSelection}
               onClick={(prod) => setSelectedProduct(prod)}
             />
           ))}
-          {filteredProducts.length === 0 && (
+          {!searchBusy && filteredProducts.length === 0 && (
             <div className="col-span-full py-20 text-center text-[#6B7280]">
               <p className="text-lg font-medium">No products found matching the criteria.</p>
               <p className="text-sm mt-1">Try selecting a different category or clearing filters.</p>
             </div>
           )}
+          {searchBusy && <p role="status" className="col-span-full py-12 text-center text-sm text-gray-500">Looking for similar products…</p>}
         </div>
+            </>;
+          }}
+        />
       </div>
 
       {/* Product Detail Modal */}

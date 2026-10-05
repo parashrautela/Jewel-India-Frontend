@@ -16,7 +16,8 @@ const withPWA = withPWAInit({
       urlPattern: ({ url }) => url.pathname.startsWith("/share/") ||
         url.pathname.startsWith("/api/shared-wishlist") ||
         url.pathname.startsWith("/api/wishlist-shares") ||
-        url.pathname.startsWith("/api/wishlists"),
+        url.pathname.startsWith("/api/wishlists") ||
+        url.pathname.startsWith("/api/retailer/marketplace"),
       handler: "NetworkOnly",
     }],
   },

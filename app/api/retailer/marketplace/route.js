@@ -59,7 +59,7 @@ export async function GET(request) {
     return NextResponse.json({
       products: productsResult.data || [],
       selected_product_ids: (selectionsResult.data || []).map((row) => row.product_id),
-    });
+    }, { headers: { "Cache-Control": "private, no-store, max-age=0" } });
   } catch (error) {
     console.error("[retailer/marketplace] Unexpected error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

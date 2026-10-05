@@ -14,12 +14,14 @@ export default async function YourTastePage() {
   const user = await getAuthUser();
 
   if (!user) redirect("/entry_page/signin");
+  if (user.user_metadata?.role !== "retailer") redirect("/entry_page/signin");
 
   const pageData = await getRetailerYourTasteData(user.id);
   if (!pageData) redirect("/entry_page/signin");
 
   return (
-    <YourTasteClient 
+    <YourTasteClient
+      key={user.id}
       products={pageData.products} 
       selectedProductIds={pageData.selectedProductIds}
       categoryTabs={pageData.categoryTabs}
