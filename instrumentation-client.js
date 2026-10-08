@@ -3,12 +3,20 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { containsWishlistData } from "./lib/wishlist/telemetry.mjs";
+const privatePage = () => typeof window !== "undefined" && containsWishlistData(window.location.href);
+const keepPrivateDataOut = event => privatePage() || containsWishlistData(event) ? null : event;
 
 Sentry.init({
+  enabled: !privatePage(),
+  beforeSend: keepPrivateDataOut,
+  beforeSendTransaction: keepPrivateDataOut,
+  beforeBreadcrumb: keepPrivateDataOut,
+  beforeSendLog: keepPrivateDataOut,
   dsn: "https://cca0a2c6c0dae27598f0df788f7ad966@o4511036789424128.ingest.de.sentry.io/4511037123526736",
 
   // Add optional integrations for additional features
-  integrations: [Sentry.replayIntegration()],
+  integrations: [Sentry.replayIntegration({ beforeAddRecordingEvent: keepPrivateDataOut })],
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1.0,
@@ -28,4 +36,7 @@ Sentry.init({
   sendDefaultPii: true,
 });
 
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+export const onRouterTransitionStart = (href, ...args) => {
+  if (containsWishlistData(href)) { void Sentry.getReplay()?.stop(); return; }
+  if (!privatePage()) Sentry.captureRouterTransitionStart(href, ...args);
+};
