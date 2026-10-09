@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { normalizeChainType } from "../../../../../lib/config/jewelleryTypes.mjs";
 import { supabaseAdmin } from "../../../../../lib/supabase/admin.js";
 import { getRequestUser } from "../../../../../lib/supabase/request-user.js";
 
@@ -48,11 +49,11 @@ export async function GET(request) {
     for (const row of rows || []) {
       const type = row.jewellery_type?.trim();
       if (type) {
-        const key = type.toLowerCase();
+        const key = normalizeChainType(type.toLowerCase());
         if (!countMap[key]) {
           countMap[key] = {
             id: key,
-            name: type.charAt(0).toUpperCase() + type.slice(1),
+            name: key === "chain" ? "Chains" : type.charAt(0).toUpperCase() + type.slice(1),
             count: 0,
           };
         }

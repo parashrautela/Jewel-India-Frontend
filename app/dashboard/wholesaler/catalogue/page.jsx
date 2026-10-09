@@ -1,3 +1,4 @@
+import { catalogueTypeAliases } from "../../../../lib/config/jewelleryTypes.mjs";
 import { createClient } from "../../../../lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -59,8 +60,7 @@ export default async function CataloguePage({ searchParams }) {
     .eq("wholesaler_id", user.id);
 
   if (initialCategory && initialCategory !== "all") {
-    const baseSlug = initialCategory.replace(/s$/, '');
-    q = q.in("jewellery_type", [baseSlug, baseSlug + 's']);
+    q = q.in("jewellery_type", catalogueTypeAliases(initialCategory));
   }
 
   q = q.order("created_at", { ascending: false }).range(0, LIMIT - 1);

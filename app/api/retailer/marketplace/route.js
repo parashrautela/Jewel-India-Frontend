@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { normalizeChainType, CHAIN_ALIASES } from "../../../../lib/config/jewelleryTypes.mjs";
 import { supabaseAdmin } from "../../../../lib/supabase/admin.js";
 import { getRequestUser } from "../../../../lib/supabase/request-user.js";
 
@@ -173,7 +174,9 @@ export async function GET(request) {
       .eq("is_published", true);
 
     if (categoryParam) {
-      query = query.ilike("jewellery_type", categoryParam);
+      query = normalizeChainType(categoryParam) === "chain"
+        ? query.in("jewellery_type", CHAIN_ALIASES)
+        : query.ilike("jewellery_type", categoryParam);
     }
 
     if (searchParam) {

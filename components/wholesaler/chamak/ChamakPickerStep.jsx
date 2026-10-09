@@ -2,11 +2,13 @@
 
 import { useState, useMemo, useRef } from "react";
 import Image from "next/image";
+import { normalizeChainType } from "../../../lib/config/jewelleryTypes.mjs";
 import { useCredits } from "../../../context/CreditsContext";
 
 const CATEGORIES = [
   { id: "all", label: "All Items" },
   { id: "necklace", label: "Necklaces" },
+  { id: "chain", label: "Chains" },
   { id: "rings", label: "Rings" },
   { id: "earrings", label: "Earrings" },
   { id: "haram", label: "Haram" },
@@ -45,7 +47,7 @@ export default function ChamakPickerStep({
       const matchCat =
         selectedCategory === "all" ||
         (product.category && product.category.toLowerCase().includes(selectedCategory)) ||
-        (product.jewellery_type && product.jewellery_type.toLowerCase().includes(selectedCategory));
+        (product.jewellery_type && normalizeChainType(product.jewellery_type.toLowerCase()).includes(selectedCategory));
 
       const matchSearch =
         !searchQuery ||

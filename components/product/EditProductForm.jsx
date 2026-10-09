@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { normalizeChainType } from "../../lib/config/jewelleryTypes.mjs";
 import { Select } from "../ui/Select";
 import { Toggle } from "../ui/Toggle";
 import { Input } from "../ui/Input";
@@ -11,6 +12,7 @@ import Image from "next/image";
 
 const JEWELLERY_TYPES = [
   { value: "necklace", label: "Necklace" },
+  { value: "chain", label: "Chains" },
   { value: "rings", label: "Rings" },
   { value: "earrings", label: "Earrings" },
   { value: "haram", label: "Haram" },
@@ -67,7 +69,7 @@ export function EditProductForm({ product }) {
   const router = useRouter();
 
   const [form, setForm] = useState({
-    jewellery_type: product?.jewellery_type || "",
+    jewellery_type: normalizeChainType(product?.jewellery_type) || "",
     category: product?.category || "",
     style: product?.style || "",
     size: product?.size || "",

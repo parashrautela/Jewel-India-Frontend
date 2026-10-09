@@ -122,6 +122,9 @@ async function createFixture({
           );
         }
 
+        const typeFilter = call.filters.find(f => f.type === 'in' && f.column === 'jewellery_type');
+        if (typeFilter) filtered = filtered.filter(p => typeFilter.values.includes(p.jewellery_type));
+
         // Handle in filter on id
         const inFilter = call.filters.find((f) => f.type === 'in' && f.column === 'id');
         if (inFilter) {
@@ -199,10 +202,13 @@ async function createFixture({
     { context }
   );
 
+  const taxonomyCode = await readFile(new URL('../lib/config/jewelleryTypes.mjs', import.meta.url), 'utf8');
+
   async function loadRoute(path) {
     const code = await readFile(new URL(path, import.meta.url), 'utf8');
     const module = new vm.SourceTextModule(code, { context });
     await module.link((spec) => {
+      if (spec.includes('jewelleryTypes')) return new vm.SourceTextModule(taxonomyCode, { context });
       if (spec === 'next/server') return nextModule;
       if (spec.includes('request-user')) return userModule;
       return dbModule;
@@ -393,4 +399,19 @@ test('detail endpoint: returns full details and selection status; rejects unpubl
     params: Promise.resolve({ id: 'prod-005' }),
   });
   assert.equal(res2.status, 404);
+});
+
+
+test('chains marketplace filter and counts combine aliases while excluding necklaces', async () => {
+  const products = ['chain', 'chains', 'neck chain', 'neck chains', 'necklace'].map((jewellery_type, i) => ({
+    id: `chain-${i}`, jewellery_type, is_published: true, created_at: '2026-10-01T12:00:00Z',
+  }));
+  const fixture = await createFixture({ products });
+  const response = await fixture.marketplaceGET(new Request('http://localhost/api/retailer/marketplace?category=Chains&limit=24'));
+  assert.equal(response.status, 200);
+  const data = await response.json();
+  assert.equal(data.products.length, 4);
+  assert.ok(data.products.every(p => p.jewellery_type !== 'necklace'));
+  const categories = await (await fixture.categoriesGET(new Request('http://localhost/api/retailer/marketplace/categories'))).json();
+  assert.deepEqual(categories.categories.find(c => c.id === 'chain'), { id: 'chain', name: 'Chains', count: 4 });
 });

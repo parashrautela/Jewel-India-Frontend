@@ -14,6 +14,7 @@ import { useUploadUsage } from "../../lib/hooks/useUploadUsage";
 
 const JEWELLERY_TYPES = [
   { value: "necklace", label: "Necklace" },
+  { value: "chain", label: "Chains" },
   { value: "rings", label: "Rings" },
   { value: "earrings", label: "Earrings" },
   { value: "haram", label: "Haram" },

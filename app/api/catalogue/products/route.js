@@ -1,3 +1,4 @@
+import { catalogueTypeAliases } from "../../../../lib/config/jewelleryTypes.mjs";
 import { NextResponse } from "next/server";
 import { createClient } from "../../../../lib/supabase/server";
 
@@ -51,8 +52,7 @@ export async function GET(request) {
     .eq("wholesaler_id", user.id);
 
   if (category && category.toLowerCase() !== "all") {
-    const baseSlug = category.toLowerCase().replace(/s$/, '');
-    query = query.in("jewellery_type", [baseSlug, baseSlug + 's']);
+    query = query.in("jewellery_type", catalogueTypeAliases(category));
   }
 
   // Handle array filters
