@@ -3,23 +3,16 @@ import withPWAInit from "@ducanh2912/next-pwa";
 
 const withPWA = withPWAInit({
   dest: "public",
-  // Capability-protected pages must never enter the navigation cache.
   cacheOnFrontEndNav: false,
   aggressiveFrontEndNavCaching: false,
-  extendDefaultRuntimeCaching: true,
   reloadOnOnline: true,
+  extendDefaultRuntimeCaching: true,
   swcMinify: true,
   disable: process.env.NODE_ENV === "development",
   workboxOptions: {
     disableDevLogs: true,
     runtimeCaching: [{
-      urlPattern: ({ url }) => url.pathname.startsWith("/share/") ||
-        url.pathname.startsWith("/api/shared-wishlist") ||
-        url.pathname.startsWith("/api/wishlist-shares") ||
-        url.pathname.startsWith("/api/wishlists") ||
-        url.pathname.startsWith("/api/referral") ||
-        url.pathname.startsWith("/api/retailer/marketplace") ||
-        url.pathname.startsWith("/join/"),
+      urlPattern: ({ url }) => url.pathname.startsWith("/share/") || url.pathname.startsWith("/api/shared-wishlist") || url.pathname.startsWith("/api/wishlist-shares"),
       handler: "NetworkOnly",
     }],
   },
@@ -58,6 +51,11 @@ const nextConfig = {
   },
   async headers() {
     return [
+      { source: '/share/:path*', headers: [
+        { key: 'Cache-Control', value: 'private, no-store, max-age=0' },
+        { key: 'Referrer-Policy', value: 'no-referrer' },
+        { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+      ] },
       {
         source: '/share/:path*',
         headers: [
