@@ -1,16 +1,44 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "../../lib/actions/auth";
+import { initiateGoogleOAuth, initiateAppleOAuth } from "../../lib/actions/oauth";
+
+// Staff usernames look like an email on this domain and are only usernames;
+// the store may have handed out just the part before the @.
+const STAFF_USERNAME_DOMAIN = "jewelindia.shop";
+
+function errorFromParams(urlError) {
+  if (!urlError) return null;
+  if (urlError === "deactivated") {
+    return "Your account has been deactivated by the store administrator.";
+  }
+  try {
+    return decodeURIComponent(urlError);
+  } catch {
+    return urlError;
+  }
+}
+
+const labelStyle = {
+  fontSize: "13px",
+  color: "#6B7280",
+  fontWeight: 500,
+  letterSpacing: "0.01em",
+};
 
 export function EmployeeLoginForm() {
-  const [error, setError] = useState(null);
+  const searchParams = useSearchParams();
+  const [error, setError] = useState(() => errorFromParams(searchParams.get("error")));
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const isFormValid = email.trim() !== "" && password.trim() !== "";
+  const isFormValid = username.trim() !== "" && password.trim() !== "";
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -18,6 +46,9 @@ export function EmployeeLoginForm() {
     setLoading(true);
 
     const formData = new FormData(e.target);
+    const typed = username.trim().toLowerCase();
+    // signIn reads "email"; append the domain when only the username was typed.
+    formData.set("email", typed.includes("@") ? typed : `${typed}@${STAFF_USERNAME_DOMAIN}`);
 
     const result = await signIn(formData);
     if (result?.error) {
@@ -27,6 +58,28 @@ export function EmployeeLoginForm() {
     // On success, signIn server action redirects to /dashboard/employee
   }
 
+  async function handleGoogle() {
+    setError(null);
+    setGoogleLoading(true);
+    // ?staff=1 tells the callback to match this Google address against the
+    // store's invitations instead of asking which door they came through.
+    const result = await initiateGoogleOAuth(`${window.location.origin}/auth/callback?staff=1`);
+    if (result?.error) {
+      setError(result.error);
+      setGoogleLoading(false);
+    }
+  }
+
+  async function handleApple() {
+    setError(null);
+    setAppleLoading(true);
+    const result = await initiateAppleOAuth(`${window.location.origin}/auth/callback?staff=1`);
+    if (result?.error) {
+      setError(result.error);
+      setAppleLoading(false);
+    }
+  }
+
   return (
     <form
       className="flex flex-col w-full"
@@ -34,7 +87,7 @@ export function EmployeeLoginForm() {
       style={{ fontFamily: "'Gilroy', 'SF Pro', system-ui, sans-serif" }}
     >
       {/* Heading */}
-      <div className="w-full flex justify-center mb-[160px]">
+      <div className="w-full flex justify-center mb-[72px]">
         <h1
           className="text-[#111111] text-left text-[1.6rem] md:text-[1.8rem] lg:text-[2.5rem]"
           style={{
@@ -50,43 +103,33 @@ export function EmployeeLoginForm() {
         </h1>
       </div>
 
-      {/* Email */}
+      {/* Username */}
       <div className="flex flex-col gap-1.5 mb-[24px]">
-        <label
-          htmlFor="emp-email"
-          style={{
-            fontSize: "13px",
-            color: "#6B7280",
-            fontWeight: 500,
-            letterSpacing: "0.01em",
-          }}
-        >
-          Email
+        <label htmlFor="emp-username" style={labelStyle}>
+          Username
         </label>
         <input
-          id="emp-email"
-          name="email"
-          type="email"
+          id="emp-username"
+          name="username"
+          type="text"
           placeholder="Enter"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
-          autoComplete="email"
+          autoComplete="username"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           className="employee-login-input w-full h-[48px] border-[1.5px] border-[#E5E7EB] rounded-[6px] px-[14px] text-[15px] text-[#111827] bg-white outline-none transition-colors focus:border-[#111]"
         />
+        <span style={{ fontSize: "12px", color: "#9CA3AF" }}>
+          The username your store owner gave you, with or without @{STAFF_USERNAME_DOMAIN}.
+        </span>
       </div>
 
       {/* Password */}
-      <div className="flex flex-col gap-1.5 mb-[32px]">
-        <label
-          htmlFor="emp-password"
-          style={{
-            fontSize: "13px",
-            color: "#6B7280",
-            fontWeight: 500,
-            letterSpacing: "0.01em",
-          }}
-        >
+      <div className="flex flex-col gap-1.5 mb-[24px]">
+        <label htmlFor="emp-password" style={labelStyle}>
           Password
         </label>
         <div style={{ position: "relative" }}>
@@ -155,6 +198,9 @@ export function EmployeeLoginForm() {
             )}
           </button>
         </div>
+        <span style={{ fontSize: "12px", color: "#9CA3AF" }}>
+          Forgot your password? Your store owner can reset it.
+        </span>
       </div>
 
       {/* Error */}
@@ -199,6 +245,40 @@ export function EmployeeLoginForm() {
       >
         {loading ? "Signing in..." : "Get Started"}
       </button>
+
+      {/* OR Divider */}
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "20px 0" }}>
+        <div style={{ flex: 1, height: "1px", background: "#E5E7EB" }} />
+        <span style={{ fontSize: "11px", color: "#9CA3AF", fontWeight: 500, letterSpacing: "0.05em" }}>OR</span>
+        <div style={{ flex: 1, height: "1px", background: "#E5E7EB" }} />
+      </div>
+
+      {/* Google — for staff the store invited by their Google address */}
+      <button
+        type="button"
+        onClick={handleGoogle}
+        disabled={googleLoading || appleLoading}
+        className="w-full h-[44px] flex items-center justify-center gap-[10px] border-[1.5px] border-[#E5E7EB] rounded-[8px] bg-white text-[14px] font-medium text-[#111827] transition-colors hover:bg-[#F9FAFB] disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        <svg width="18" height="18" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M47.52 24.552c0-1.636-.148-3.21-.424-4.728H24v8.948h13.204c-.568 3.068-2.292 5.668-4.884 7.412v6.16h7.908C44.164 38.028 47.52 31.836 47.52 24.552z" fill="#4285F4"/>
+          <path d="M24 48c6.636 0 12.204-2.2 16.268-5.968l-7.908-6.16c-2.196 1.472-5.004 2.34-8.36 2.34-6.428 0-11.872-4.34-13.824-10.172H2.04v6.36C6.084 42.916 14.46 48 24 48z" fill="#34A853"/>
+          <path d="M10.176 28.04A14.41 14.41 0 0 1 9.6 24c0-1.404.24-2.768.576-4.04v-6.36H2.04A23.956 23.956 0 0 0 0 24c0 3.864.928 7.516 2.04 10.4l8.136-6.36z" fill="#FBBC05"/>
+          <path d="M24 9.552c3.624 0 6.872 1.248 9.428 3.696l7.076-7.076C36.196 2.392 30.628 0 24 0 14.46 0 6.084 5.084 2.04 13.6l8.136 6.36C12.128 13.892 17.572 9.552 24 9.552z" fill="#EA4335"/>
+        </svg>
+        {googleLoading ? "Redirecting..." : "Continue with Google"}
+      </button>
+      <button
+        type="button"
+        onClick={handleApple}
+        disabled={googleLoading || appleLoading}
+        className="w-full h-[44px] mt-[10px] flex items-center justify-center rounded-[8px] bg-black text-white text-[14px] font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {appleLoading ? "Redirecting..." : "Continue with Apple"}
+      </button>
+      <p style={{ fontSize: "12px", color: "#9CA3AF", margin: "10px 0 0", lineHeight: 1.5 }}>
+        Use the email address your store invited. For Apple, choose Share My Email.
+      </p>
     </form>
   );
 }

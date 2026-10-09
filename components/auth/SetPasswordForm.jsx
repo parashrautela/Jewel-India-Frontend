@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+const CHOOSABLE_ROLES = ["wholesaler", "retailer"];
+
+// What happens after this step depends on the door the person chose.
+const DOOR_NOTES = {
+  wholesaler: "Wholesaler accounts are verified by our team before they go live.",
+  retailer: "Retailer accounts join on a wholesaler's invitation and are verified before they go live.",
+};
+const NO_DOOR_NOTE = "You'll choose how you use Jewels India after this step.";
 
 const RULES = [
   { id: "length", label: "At least 8 characters", test: (p) => p.length >= 8 },
@@ -11,6 +20,8 @@ const RULES = [
 ];
 export function SetPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const doorRole = CHOOSABLE_ROLES.includes(searchParams.get("role")) ? searchParams.get("role") : null;
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,8 +40,9 @@ export function SetPasswordForm() {
     setLoading(true);
     setError(null);
 
-    const searchParams = new URL(window.location.href).searchParams;
-    const role = searchParams.get("role") || sessionStorage.getItem("referral_role") || "wholesaler";
+    // The door chosen on the entry page; nothing is assumed when there is none.
+    const storedRole = sessionStorage.getItem("referral_role");
+    const role = doorRole || (CHOOSABLE_ROLES.includes(storedRole) ? storedRole : null);
 
     const res = await fetch("/api/auth/set-password", {
       method: "POST",
@@ -51,7 +63,8 @@ export function SetPasswordForm() {
     sessionStorage.removeItem("otp_remaining_resends");
     sessionStorage.removeItem("otp_locked_until");
 
-    const redirectDest = role === "retailer" ? "/onboard-retailer" : "/onboard";
+    const redirectDest =
+      role === "retailer" ? "/onboard-retailer" : role === "wholesaler" ? "/onboard" : "/select-role";
     router.push(redirectDest);
   }
 
@@ -183,7 +196,7 @@ export function SetPasswordForm() {
         {/* Info Note */}
         <div className="mt-[24px] md:mt-[48px] xl:mt-[40px] mb-[16px] xl:mb-[20px]">
           <p className="text-[12px] text-[#9CA3AF] leading-relaxed">
-            Only wholesalers accounts will be verified. Retailers will require an invite to sign in.
+            {DOOR_NOTES[doorRole] || NO_DOOR_NOTE}
           </p>
         </div>
 

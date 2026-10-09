@@ -4,7 +4,7 @@ import { SelectRoleForm } from "../../components/auth/SelectRoleForm";
 
 export const metadata = {
   title: "Choose Your Role — Celestique",
-  description: "Tell us whether you're a wholesaler or a retailer to personalise your experience.",
+  description: "Tell us whether you're a wholesaler, a retailer or store staff to personalise your experience.",
 };
 export default async function SelectRolePage() {
   // getAuthUser() is deduplicated by React.cache() — one /user call for the
@@ -16,6 +16,7 @@ export default async function SelectRolePage() {
   const existingRole = user.user_metadata?.role;
   if (existingRole === "wholesaler") redirect("/dashboard/wholesaler");
   if (existingRole === "retailer") redirect("/");
+  if (existingRole === "employee") redirect("/dashboard/employee");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-celestique-cream px-4">
@@ -36,7 +37,7 @@ export default async function SelectRolePage() {
               How will you use Celestique?
             </h1>
             <p className="text-celestique-dark/60 text-[10px] uppercase tracking-[0.2em] mt-4 leading-relaxed">
-              Select your role so we can tailor your experience.<br />
+              Choose the door you&apos;re coming through.<br />
               <span className="text-celestique-dark/40 text-[9px] tracking-[0.1em]">This cannot be changed later.</span>
             </p>
           </div>

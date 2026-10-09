@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { normalizeChainType } from "../../../lib/config/jewelleryTypes.mjs";
 import { productImageUrl } from "../../../lib/supabase/set-creation-queries";
 
 /**
@@ -20,7 +21,7 @@ export default function SetCreationPickerStep({ flow }) {
   const categories = useMemo(() => {
     const set = new Set();
     flow.catalogProducts.forEach((p) => {
-      const c = p.jewellery_type || p.category;
+      const c = normalizeChainType(p.jewellery_type || p.category);
       if (c) set.add(c);
     });
     return ["all", ...Array.from(set).sort()];
@@ -29,7 +30,7 @@ export default function SetCreationPickerStep({ flow }) {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return flow.catalogProducts.filter((p) => {
-      const c = p.jewellery_type || p.category;
+      const c = normalizeChainType(p.jewellery_type || p.category);
       if (category !== "all" && c !== category) return false;
       if (!q) return true;
       return (p.title || "").toLowerCase().includes(q) || (c || "").toLowerCase().includes(q);

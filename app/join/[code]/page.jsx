@@ -1,3 +1,4 @@
+import { supabaseAdmin } from "../../../lib/supabase/admin";
 import { notFound } from "next/navigation";
 import JoinLandingClient from "./JoinLandingClient";
 
@@ -18,34 +19,18 @@ export async function generateMetadata({ params }) {
 export default async function JoinPage({ params }) {
   const { code } = await params;
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
-
-  let referralData = null;
-
-  try {
-    const res = await fetch(`${baseUrl}/api/referral/validate?code=${encodeURIComponent(code)}`, {
-      cache: "no-store",
-    });
-
-    if (res.ok) {
-      const json = await res.json();
-      if (json.valid) {
-        referralData = json;
-      }
-    }
-  } catch (err) {
-    console.error("[/join/[code]] Validation fetch error:", err);
-  }
+  const {data:referralData,error}=await supabaseAdmin.rpc('validate_referral_code',{p_code:code});
+  if(error)throw new Error('Invitation validation is temporarily unavailable.');
 
   // ── Invalid / expired / maxed-out code → 404 ───────────────────
-  if (!referralData) {
+  if (!referralData?.valid) {
     notFound();
   }
 
   return (
     <JoinLandingClient
-      code={code}
+      code={referralData.code}
+      giftCredits={referralData.gift_credits}
       businessName={referralData.business_name}
       wholesalerName={referralData.wholesaler_name}
       businessLogoUrl={referralData.business_logo_url}

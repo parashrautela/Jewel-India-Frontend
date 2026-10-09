@@ -99,7 +99,7 @@ export default function MessagesClient({ initialConversations, currentUserType, 
   }
 
   return (
-    <div className="flex flex-col w-full bg-white h-screen overflow-hidden">
+    <div data-employee-page="messages" className="flex flex-col w-full bg-white h-screen overflow-hidden">
       {/* Page Header */}
       <div className="relative flex items-center justify-center px-6 py-4 border-b border-gray-100 shrink-0">
         <button

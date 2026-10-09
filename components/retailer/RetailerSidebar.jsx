@@ -58,6 +58,8 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  { name: "Wishlists", href: "/dashboard/retailer/wishlists", icon: <span aria-hidden="true">♡</span> },
+  { name: "Daily credits", href: "/dashboard/retailer/credits", icon: <span aria-hidden="true">◈</span> },
 ];
 
 function RetailerSidebar({ retailer }) {
@@ -223,6 +225,8 @@ function RetailerSidebar({ retailer }) {
       {isMoreOpen && (
         <div className="bottom-nav-popover" onClick={() => setIsMoreOpen(false)}>
           <div className="bottom-nav-popover-content" onClick={(e) => e.stopPropagation()}>
+            <Link href="/dashboard/retailer/wishlists" onClick={() => setIsMoreOpen(false)} className="popover-item">Customer wishlists</Link>
+            <Link href="/dashboard/retailer/credits" onClick={() => setIsMoreOpen(false)} className="popover-item">Daily credits</Link>
             {/* Store Theme */}
             <Link 
               href="/dashboard/retailer/theme" 

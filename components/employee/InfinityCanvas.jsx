@@ -198,6 +198,8 @@ export default function InfinityCanvas({ products, onBack, onNext, retailerName,
   return (
     <div 
       ref={containerRef}
+      data-employee-fullscreen
+      data-employee-page="canvas"
       className="fixed inset-0 w-screen h-screen bg-[#fcfcfc] overflow-hidden cursor-grab active:cursor-grabbing select-none z-50"
     >
       {/* The massive panning wrapper */}
@@ -247,7 +249,7 @@ export default function InfinityCanvas({ products, onBack, onNext, retailerName,
 
         {/* Store Name Pill — frosted glass, matches bottom filter bar */}
         <div className="flex justify-center items-center flex-1">
-          <div className="bg-gradient-to-r from-white/30 via-white/55 to-white/30 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/50 rounded-full px-7 py-2.5 pointer-events-auto flex items-center gap-2">
+          <div data-employee-surface="pill" className="bg-gradient-to-r from-white/30 via-white/55 to-white/30 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/50 rounded-full px-7 py-2.5 pointer-events-auto flex items-center gap-2">
             {/* Small jewel dot accent */}
             <span className="w-1.5 h-1.5 rounded-full bg-gray-400/60 shrink-0" />
             <h1 className="font-serif text-[17px] tracking-widest text-gray-800/90 whitespace-nowrap">
@@ -268,7 +270,7 @@ export default function InfinityCanvas({ products, onBack, onNext, retailerName,
           onTouchStart={(e) => e.stopPropagation()}
           onTouchEnd={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
-          className="bg-gradient-to-r from-white/30 via-white/55 to-white/30 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-white/40 rounded-full px-10 py-3 flex gap-8 pointer-events-auto items-center"
+          data-employee-surface="pill" className="bg-gradient-to-r from-white/30 via-white/55 to-white/30 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-white/40 rounded-full px-10 py-3 flex gap-8 pointer-events-auto items-center"
         >
           
           {occasion && (
@@ -348,7 +350,7 @@ export default function InfinityCanvas({ products, onBack, onNext, retailerName,
           width: "280px",
         }}
       >
-        <div className="w-full bg-white/40 backdrop-blur-2xl border border-white/60 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-5 flex flex-col max-h-[80vh] overflow-x-hidden overflow-y-auto no-scrollbar">
+        <div data-employee-panel className="w-full bg-white/40 backdrop-blur-2xl border border-white/60 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-5 flex flex-col max-h-[80vh] overflow-x-hidden overflow-y-auto no-scrollbar">
 
           <div className="flex items-center gap-3 mb-6 shrink-0">
             {/* Toggle button — inside panel, collapses it to the right */}

@@ -51,7 +51,7 @@ export function OrderDetailModal({ order, onClose }) {
 
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 md:p-12">
+    <div data-employee-fullscreen className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 md:p-12">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -59,7 +59,7 @@ export function OrderDetailModal({ order, onClose }) {
       />
       
       {/* Modal Content */}
-      <div className="bg-white w-full max-w-5xl rounded-[16px] shadow-2xl relative z-10 animate-fade-in-up max-h-[95vh] overflow-y-auto flex flex-col no-scrollbar pb-10">
+      <div data-employee-dialog className="bg-white w-full max-w-5xl rounded-[16px] shadow-2xl relative z-10 animate-fade-in-up max-h-[95vh] overflow-y-auto flex flex-col no-scrollbar pb-10">
         
         {/* Close Button at Modal Level */}
         <button 

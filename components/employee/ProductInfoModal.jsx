@@ -158,12 +158,16 @@ export function ProductInfoModal({ isOpen, onClose, product, onStartChat, isFull
       <>
         {/* White Background layer behind pillars */}
         <div 
+          data-employee-fullscreen
+          data-employee-detail-base
           style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", overflow: "hidden" }} 
           className="bg-white z-[58] pointer-events-none" 
         />
 
         {/* Arch Background image container */}
         <div 
+          data-employee-fullscreen
+          data-employee-ornament
           style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", overflow: "hidden" }} 
           className="z-[59] pointer-events-none"
         >
@@ -209,7 +213,7 @@ export function ProductInfoModal({ isOpen, onClose, product, onStartChat, isFull
         </div>
 
         {/* Immersive Tablet-First Full Screen Details Container */}
-        <div className="fixed inset-0 overflow-y-auto z-[60] flex flex-col items-center pb-24 font-sans select-none">
+        <div data-employee-fullscreen className="fixed inset-0 overflow-y-auto z-[60] flex flex-col items-center pb-24 font-sans select-none">
 
           {/* Glassmorphic back button */}
           <button
@@ -230,6 +234,7 @@ export function ProductInfoModal({ isOpen, onClose, product, onStartChat, isFull
 
           {/* Main content wrapper centered inside the arch */}
           <div 
+            data-employee-detail-content
             className="relative w-full max-w-[400px] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] flex flex-col items-center"
             style={{ 
               paddingTop: "clamp(90px, 10vw, 115px)", 
@@ -240,7 +245,7 @@ export function ProductInfoModal({ isOpen, onClose, product, onStartChat, isFull
           >
 
             {/* Header section — centered, sits inside the white arch opening visually */}
-            <div className="flex flex-col items-center text-center mb-10 w-full">
+            <div data-employee-detail-heading className="flex flex-col items-center text-center mb-10 w-full">
               <div className="flex items-center justify-center gap-3 mb-3">
                 <span 
                   className="font-bold uppercase tracking-[0.2em] text-[#6e6e6e] font-sans"
@@ -268,7 +273,7 @@ export function ProductInfoModal({ isOpen, onClose, product, onStartChat, isFull
             </div>
 
             {/* Image section — main image and thumbnails side by side */}
-            <div className="flex items-start justify-center gap-4 sm:gap-6 mb-12 relative w-full">
+            <div data-employee-detail-images className="flex items-start justify-center gap-4 sm:gap-6 mb-12 relative w-full">
 
               {/* Main image container */}
               <div
@@ -325,7 +330,7 @@ export function ProductInfoModal({ isOpen, onClose, product, onStartChat, isFull
             </div>
 
             {/* Specifications section */}
-            <div className="w-full grid grid-cols-1 sm:grid-cols-[210px_210px] md:grid-cols-[250px_250px] lg:grid-cols-[290px_290px] justify-between gap-y-8 mt-4">
+            <div data-employee-detail-specs className="w-full grid grid-cols-1 sm:grid-cols-[210px_210px] md:grid-cols-[250px_250px] lg:grid-cols-[290px_290px] justify-between gap-y-8 mt-4">
 
               {/* Left Column: MATERIAL & WEIGHT */}
               <div className="flex flex-col gap-6">
@@ -420,7 +425,7 @@ export function ProductInfoModal({ isOpen, onClose, product, onStartChat, isFull
 
         {/* ── REQUEST SIDEBAR OVERLAY ── */}
         {isSidebarOpen && (
-          <div className="fixed inset-0 z-[70] flex justify-end">
+          <div data-employee-fullscreen className="fixed inset-0 z-[70] flex justify-end">
             {/* Backdrop */}
             <div
               className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
@@ -550,11 +555,12 @@ export function ProductInfoModal({ isOpen, onClose, product, onStartChat, isFull
   return (
     /* Standard Backdrop (Floating Card Modal Layout) */
     <div
+      data-employee-fullscreen
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-3 md:p-6"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       {/* Modal card */}
-      <div className="relative w-full max-w-[860px] bg-white rounded-[20px] shadow-2xl overflow-y-auto lg:overflow-hidden flex flex-col lg:flex-row max-h-[95dvh] lg:max-h-[88dvh]">
+      <div data-employee-dialog className="relative w-full max-w-[860px] bg-white rounded-[20px] shadow-2xl overflow-y-auto lg:overflow-hidden flex flex-col lg:flex-row max-h-[95dvh] lg:max-h-[88dvh]">
 
         {/* ── LEFT PANEL: Image + Thumbnails ── */}
         <div className="w-full lg:w-[48%] shrink-0 flex flex-col bg-[#f5f5f5] p-4 lg:p-5">
@@ -699,7 +705,7 @@ export function ProductInfoModal({ isOpen, onClose, product, onStartChat, isFull
 
       {/* ── REQUEST SIDEBAR OVERLAY ── */}
       {isSidebarOpen && (
-        <div className="fixed inset-0 z-[70] flex justify-end">
+        <div data-employee-fullscreen className="fixed inset-0 z-[70] flex justify-end">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"

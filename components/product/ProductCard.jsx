@@ -28,11 +28,15 @@ export function ProductCard({ product, index = 0 }) {
   const [modalOpen,   setModalOpen]   = useState(false);
   const cardRef = useRef(null);
 
-  // Build variant list — prefer generated variants, then processed
-  const variants =
-    Array.isArray(product.generated_image_urls) && product.generated_image_urls.length > 0
-      ? product.generated_image_urls
-      : [product.processed_image_url || product.image_url || product.raw_image_url].filter(Boolean);
+  // Respect the wholesaler's selected showcase order. For existing products
+  // without that selection, show generated renders before raw/upload fallbacks.
+  const variants = Array.from(new Set([
+    ...(Array.isArray(product.showcase_image_urls) ? product.showcase_image_urls : []),
+    ...(Array.isArray(product.generated_image_urls) ? product.generated_image_urls : []),
+    product.processed_image_url,
+    product.image_url,
+    product.raw_image_url,
+  ].filter(Boolean)));
 
   const hasMultiple = variants.length > 1;
   const activeUrl   = variants[variantIdx] ?? null;

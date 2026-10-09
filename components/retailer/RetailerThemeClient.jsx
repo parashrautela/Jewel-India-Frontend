@@ -1,4 +1,5 @@
 "use client";
+import { useCredits } from "../../context/CreditsContext";
 
 import { useState } from "react";
 import {
@@ -216,6 +217,7 @@ function ClaimModal({ theme, onClose, onClaimSuccess }) {
 }
 
 export default function RetailerThemeClient({ initialTheme = "indian" }) {
+  const { wallet } = useCredits();
   const [selectedTheme, setSelectedTheme] = useState(() => {
     const safeInitialTheme = normalizeThemeId(initialTheme);
     if (typeof window === "undefined") return safeInitialTheme;
@@ -251,7 +253,7 @@ export default function RetailerThemeClient({ initialTheme = "indian" }) {
             <button
               key={theme.id}
               onClick={() => {
-                if (theme.locked) {
+                if (theme.locked && wallet?.mode !== "daily") {
                   setLockedModal(theme);
                 } else if (!isSelected) {
                   setClaimModal(theme);
@@ -279,7 +281,7 @@ export default function RetailerThemeClient({ initialTheme = "indian" }) {
 
               {/* Top badge: SELECTED, CLAIM, or LOCKED */}
               <div className="absolute top-4 left-4 z-10">
-                {theme.locked ? (
+                {theme.locked && wallet?.mode !== "daily" ? (
                   <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] font-bold tracking-widest uppercase rounded-full px-3 py-1.5">
                     <LockIcon />
                     Locked

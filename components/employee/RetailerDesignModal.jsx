@@ -55,8 +55,9 @@ export function RetailerDesignModal({ isOpen, onClose, design, onUpdate }) {
   const category = design.category || "Jewellery";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.4)] backdrop-blur-sm p-4 overflow-hidden" onClick={onClose}>
+    <div data-employee-fullscreen className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.4)] backdrop-blur-sm p-4 overflow-hidden" onClick={onClose}>
       <div 
+        data-employee-dialog
         className="relative bg-white rounded-[24px] shadow-[0_16px_40px_rgba(0,0,0,0.12)] w-full max-w-[1000px] max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col md:flex-row"
         onClick={(e) => e.stopPropagation()}
       >

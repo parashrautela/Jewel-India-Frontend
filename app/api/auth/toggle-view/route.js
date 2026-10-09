@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { supabaseAdmin } from "../../../../lib/supabase/admin.js";
 
 export async function POST(request) {
   const cookieStore = await cookies();
@@ -37,8 +38,11 @@ export async function POST(request) {
     const { mode } = await request.json();
 
     if (mode === "employee") {
-      // 1. Fetch Retailer info to link virtual employee
-      const { data: retailer, error: retailerError } = await supabase
+      // 1. Fetch Retailer info to link virtual employee.
+      // The owner's own "Admin" row is a system row: the database only lets
+      // the service role write one (a user session may only insert Google
+      // invitations), so everything below runs as the admin client.
+      const { data: retailer, error: retailerError } = await supabaseAdmin
         .from("retailers")
         .select("id, full_name")
         .eq("user_id", user.id)
@@ -49,7 +53,7 @@ export async function POST(request) {
       }
 
       // 2. Check if employee record already exists
-      const { data: existingEmployees, error: searchError } = await supabase
+      const { data: existingEmployees, error: searchError } = await supabaseAdmin
         .from("employees")
         .select("id, designation")
         .eq("auth_user_id", user.id);
@@ -76,7 +80,7 @@ export async function POST(request) {
         };
 
         // Try inserting with 'is_system_generated' column, fallback if column missing
-        const { error: insertError } = await supabase
+        const { error: insertError } = await supabaseAdmin
           .from("employees")
           .insert({
             ...baseInsertData,
@@ -86,7 +90,7 @@ export async function POST(request) {
         if (insertError) {
           // If the is_system_generated column is missing, run fallback insert
           console.warn("is_system_generated column is missing in employees table, falling back to standard columns...", insertError.message);
-          const { error: fallbackError } = await supabase
+          const { error: fallbackError } = await supabaseAdmin
             .from("employees")
             .insert(baseInsertData);
 

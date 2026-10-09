@@ -58,14 +58,15 @@ export function ProductDetailModal({ product, onClose }) {
   const [imgIdx, setImgIdx] = useState(0);
   const [imgLoaded, setImgLoaded] = useState(false);
 
-  // Build image list — prefer generated variants, fallback chain
-  const images = (() => {
-    if (Array.isArray(product.generated_image_urls) && product.generated_image_urls.length > 0)
-      return product.generated_image_urls;
-    const single =
-      product.processed_image_url || product.image_url || product.raw_image_url;
-    return single ? [single] : [];
-  })();
+  // Follow the wholesaler's selected showcase order, then generated renders,
+  // then safe legacy fallbacks. Keep each image once.
+  const images = Array.from(new Set([
+    ...(Array.isArray(product.showcase_image_urls) ? product.showcase_image_urls : []),
+    ...(Array.isArray(product.generated_image_urls) ? product.generated_image_urls : []),
+    product.processed_image_url,
+    product.image_url,
+    product.raw_image_url,
+  ].filter(Boolean)));
 
   const activeImg = images[imgIdx] ?? null;
   const hasMultiple = images.length > 1;

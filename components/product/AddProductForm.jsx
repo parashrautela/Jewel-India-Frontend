@@ -8,11 +8,13 @@ import { InputWithSuffix } from "../ui/InputWithSuffix";
 import { ImageUpload } from "./ImageUpload";
 import { uploadProduct } from "../../lib/api/products";
 import { saveProduct, insertProduct } from "../../lib/actions/products";
+import { uploadProductDraftImage } from "../../lib/supabase/product-queries";
 import { useRouter } from "next/navigation";
 import { useUploadUsage } from "../../lib/hooks/useUploadUsage";
 
 const JEWELLERY_TYPES = [
   { value: "necklace", label: "Necklace" },
+  { value: "chain", label: "Chains" },
   { value: "rings", label: "Rings" },
   { value: "earrings", label: "Earrings" },
   { value: "haram", label: "Haram" },
@@ -181,22 +183,14 @@ export function AddProductForm({ userId }) {
 
     try {
       if (uploadLater) {
+        let raw_image_url = null;
         if (imageFile) {
           setStatus("uploading");
-          const titleToUse = form.title ||
-            JEWELLERY_TYPES.find((t) => t.value === form.jewellery_type)?.label ||
-            undefined;
+          raw_image_url = await uploadProductDraftImage(imageFile, userId);
+        }
 
-          const { product_id, raw_image_url } = await uploadProduct({
-            file: imageFile,
-            title: titleToUse,
-            jewellery_type: form.jewellery_type || undefined,
-            wholesaler_id: userId,
-          });
-
-          setStatus("saving");
-          const saveResult = await saveProduct({
-            product_id,
+        setStatus("saving");
+        const saveResult = await insertProduct({
             title: form.title || JEWELLERY_TYPES.find((t) => t.value === form.jewellery_type)?.label || "Untitled",
             jewellery_type: form.jewellery_type || null,
             category: form.category || null,
@@ -209,34 +203,11 @@ export function AddProductForm({ userId }) {
             net_weight: form.netWeight || null,
             gross_weight: form.grossWeight || null,
             stone_weight: form.stoneWeight || null,
-            raw_image_url: raw_image_url || null,
-            processed_image_url: null,
-            generated_image_urls: null,
+            raw_image_url,
           });
 
-          if (saveResult?.error) {
-            throw new Error(saveResult.error);
-          }
-        } else {
-          setStatus("saving");
-          const saveResult = await insertProduct({
-            title: form.title || JEWELLERY_TYPES.find((t) => t.value === form.jewellery_type)?.label || "Untitled",
-            jewellery_type: form.jewellery_type || null,
-            category: form.category || null,
-            style: form.style || null,
-            size: form.size || null,
-            stock_available: form.stockAvailable,
-            is_published: false,
-            make_to_order_days: form.makeToOrderDays || null,
-            metal_purity: form.metalPurity || null,
-            net_weight: form.netWeight || null,
-            gross_weight: form.grossWeight || null,
-            stone_weight: form.stoneWeight || null,
-          });
-
-          if (saveResult?.error) {
-            throw new Error(saveResult.error);
-          }
+        if (saveResult?.error) {
+          throw new Error(saveResult.error);
         }
 
         setStatus("done");

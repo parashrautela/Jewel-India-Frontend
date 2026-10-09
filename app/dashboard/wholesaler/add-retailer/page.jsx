@@ -1,9 +1,7 @@
 import { createClient } from "../../../../lib/supabase/server";
 import { supabaseAdmin } from "../../../../lib/supabase/admin";
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import ReferralManager from "../../../../components/wholesaler/referral/ReferralManager";
-import styles from "./addRetailer.module.css";
 
 export const metadata = {
   title: "Add Retailer — Jewel India",
@@ -30,76 +28,5 @@ export default async function AddRetailerPage() {
     redirect("/onboard/submitted");
   }
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
-
-  const { data: rawLinks } = await supabaseAdmin
-    .from("referral_links")
-    .select("id, code, uses_count, max_uses, is_active, expires_at, accepted_at, rewarded_at, created_at")
-    .eq("wholesaler_id", wholesaler.id)
-    .order("created_at", { ascending: false });
-
-  const initialLinks = (rawLinks ?? []).map((l) => ({
-    ...l,
-    link: `${siteUrl}/join/${l.code}`,
-  }));
-
-  return (
-    <main className="min-h-screen bg-white">
-      <div className={styles.container}>
-        {/* Header Section */}
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            Referral
-          </h1>
-          <p className={styles.subtitle}>
-            Invite a new retailer to Jewel India. Each link works once, expires in 7 days, and earns you 1,000 credits after admin verification.
-          </p>
-        </div>
-
-        {/* 3-Step Flow Section */}
-        <div className={styles.flowContainer}>
-          
-          {/* Arrow 1 */}
-          <svg className={`${styles.arrow} ${styles.arrow1}`} preserveAspectRatio="none" viewBox="0 0 100 30">
-            <path d="M15,30 Q50,-10 85,30" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeDasharray="6, 6" />
-          </svg>
-
-          {/* Arrow 2 */}
-          <svg className={`${styles.arrow} ${styles.arrow2}`} preserveAspectRatio="none" viewBox="0 0 100 30">
-            <path d="M15,30 Q50,-10 85,30" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeDasharray="6, 6" />
-          </svg>
-
-          {/* Step 1 */}
-          <div className={styles.step}>
-             <Image src="https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777306586/LINK_spu884.svg" alt="Share the link" width={40} height={40} loading="lazy" className={styles.stepIcon} />
-             <h3 className={styles.stepTitle}>1. Share the link</h3>
-             <p className={styles.stepDesc}>Invite retailers by sending them a unique link.</p>
-          </div>
-
-          <div className={styles.verticalArrow}></div>
-
-          {/* Step 2 */}
-          <div className={styles.step}>
-             <Image src="https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777306586/signup_vlrosz.svg" alt="Signup" width={40} height={40} loading="lazy" className={styles.stepIcon} />
-             <h3 className={styles.stepTitle}>2. Signup</h3>
-             <p className={styles.stepDesc}>They install the iOS app and complete retailer onboarding.</p>
-          </div>
-
-          <div className={styles.verticalArrow}></div>
-
-          {/* Step 3 */}
-          <div className={styles.step}>
-             <Image src="https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777306585/retailerShop_iashfb.svg" alt="Retailer shop setup" width={40} height={40} loading="lazy" className={styles.stepIcon} />
-             <h3 className={styles.stepTitle}>3. Admin verification</h3>
-             <p className={styles.stepDesc}>Once approved, they enter the global catalogue and your reward is issued.</p>
-          </div>
-
-        </div>
-
-        {/* Main content - ReferralManager */}
-        <ReferralManager initialLinks={initialLinks} />
-      </div>
-    </main>
-  );
+  return <main className="min-h-screen bg-white pb-20"><header className="px-6 py-6"><h1 className="font-cirka text-3xl font-bold">Invite retailers</h1></header><ReferralManager key={user.id} accountId={user.id} /></main>;
 }

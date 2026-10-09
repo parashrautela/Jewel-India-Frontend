@@ -5,6 +5,7 @@ import { StepIndicator } from "../../../components/onboard/StepIndicator";
 import { createClient } from "../../../lib/supabase/server";
 import { redirect } from "next/navigation";
 import { SignOutButton as OnboardSignOutButton } from "../../../components/auth/SignOutButton";
+import { AttachInvitationCode } from "../../../components/onboard-retailer/submitted/AttachInvitationCode";
 
 export const metadata = { title: "Verification Pending — Retailer" };
 
@@ -18,7 +19,7 @@ export default async function RetailerSubmittedPage() {
 
   const { data: retailer } = await supabase
     .from("retailers")
-    .select("verification_status, created_at, updated_at, rejection_reason, rejected_documents")
+    .select("verification_status, referred_by, created_at, updated_at, rejection_reason, rejected_documents")
     .eq("user_id", user.id)
     .single();
 
@@ -99,12 +100,15 @@ export default async function RetailerSubmittedPage() {
         </p>
 
         <div className="w-full max-w-[500px] bg-[#F9FAFB] border border-[#E5E7EB] rounded-[16px] p-6 md:p-8">
-          <VerificationTimeline 
-            status={retailer.verification_status} 
+          <VerificationTimeline
+            status={retailer.verification_status}
             submittedAt={timeSubmitted}
             updatedAt={retailer.updated_at}
           />
         </div>
+
+        {/* No inviter yet (applied before invitations were required): nobody is verified without one */}
+        {!retailer.referred_by && <AttachInvitationCode />}
 
         {/* Rejection / Revision Details Box */}
         {(retailer.verification_status === "rejected" || retailer.verification_status === "resubmission_required") && (

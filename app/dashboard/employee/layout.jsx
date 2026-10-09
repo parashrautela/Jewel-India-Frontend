@@ -2,6 +2,7 @@ import { createClient } from "../../../lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import EmployeeLayout from "../../../components/employee/EmployeeLayout";
+import { CreditsProvider } from "../../../context/CreditsContext";
 import { ensureVirtualEmployee } from "../../../lib/supabase/queries";
 import {
   getEmployeeLatestOrderUpdate,
@@ -49,7 +50,7 @@ export default async function EmployeeDashboardLayout({ children }) {
   const isRetailer = user.user_metadata?.role === "retailer";
 
   return (
-    <EmployeeLayout
+    <CreditsProvider><EmployeeLayout
       employeeName={employee.full_name}
       businessName={retailerShell.businessName}
       hasUnreadQueries={hasUnreadQueries}
@@ -58,6 +59,6 @@ export default async function EmployeeDashboardLayout({ children }) {
       selectedTheme={selectedTheme}
     >
       {children}
-    </EmployeeLayout>
+    </EmployeeLayout></CreditsProvider>
   );
 }

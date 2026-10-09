@@ -1,0 +1,90 @@
+// Real component + real visual model in a browser; catalogue fixture only.
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import { mkdtemp, writeFile, rm, readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+const web = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const root = path.dirname(web);
+const require = createRequire(import.meta.url);
+const runtimeRequire = createRequire('/Users/parashrautela/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json');
+const { chromium } = runtimeRequire('playwright');
+const { createServer } = await import(pathToFileURL(path.join(root, 'Admin-Panel-for-jewel-India-/node_modules/vite/dist/node/index.js')));
+const liveFixture = process.env.JEWEL_CATALOGUE_FIXTURE ? JSON.parse(await readFile(process.env.JEWEL_CATALOGUE_FIXTURE,'utf8')) : null;
+const fixture = await mkdtemp('/private/tmp/jewel-catalogue-search-');
+await writeFile(path.join(fixture, 'index.html'), '<html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><div id="root"></div><script type="module" src="/main.jsx"></script></body></html>');
+await writeFile(path.join(fixture, 'main.jsx'), `import React from 'react';import {createRoot} from 'react-dom/client';import YourTasteClient from ${JSON.stringify(path.join(web,'components/retailer/YourTasteClient.jsx'))};import ${JSON.stringify(path.join(web,'app/globals.css'))};const products=${liveFixture ? JSON.stringify(liveFixture.products) : "[{id:'necklace',title:'Temple necklace',jewellery_type:'necklace',category:'gold',raw_image_url:'/image/neclace.png',net_weight:8},{id:'ring',title:'Silver ring',jewellery_type:'rings',category:'silver',raw_image_url:'/image/rings.png',net_weight:2},{id:'bangle',title:'Gold bangle',jewellery_type:'necklace',category:'gold',raw_image_url:'/image/bangles.png',net_weight:10}]"};createRoot(document.getElementById('root')).render(<YourTasteClient products={products} selectedProductIds={[]} categoryTabs={${liveFixture ? JSON.stringify([{name:liveFixture.category,slug:liveFixture.category}]) : "[{name:'Necklace',slug:'necklace'},{name:'Rings',slug:'rings'}]"}}/>);`);
+await writeFile(path.join(fixture,'dynamic.jsx'), `export default function dynamic(){return function Modal(){return null;}}`);
+await writeFile(path.join(fixture,'image.jsx'),`import React from 'react';export default function Image({fill,loading,...props}){return <img {...props} loading={loading}/>}`);
+const tailwind = require('@tailwindcss/postcss');
+const server = await createServer({configFile:false,root:fixture,publicDir:path.join(web,'public'),resolve:{alias:[{find:'react',replacement:path.join(web,'node_modules/react')},{find:'react-dom',replacement:path.join(web,'node_modules/react-dom')},{find:'next/image',replacement:path.join(fixture,'image.jsx')},{find:'next/dynamic',replacement:path.join(fixture,'dynamic.jsx')},{find:'@huggingface/transformers',replacement:path.join(web,'node_modules/@huggingface/transformers/dist/transformers.web.js')},{find:'tailwindcss',replacement:path.join(web,'node_modules/tailwindcss')}]},css:{postcss:{plugins:[tailwind({base:web})]}},optimizeDeps:{include:['react','react-dom/client','react/jsx-runtime','react/jsx-dev-runtime','@huggingface/transformers']},esbuild:{jsx:'automatic'},server:{host:'127.0.0.1',port:0,fs:{allow:[root,fixture]}}});
+await server.listen();
+const browser = await chromium.launch({executablePath:process.env.JEWEL_CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+const page = await browser.newPage({viewport:{width:1280,height:900}});
+const errors=[];const selectionWrites=[];
+await page.route('**/api/retailer/your-taste',async route=>{selectionWrites.push(route.request().postDataJSON());await route.fulfill({contentType:'application/json',body:JSON.stringify({success:true})});});
+page.on('worker',worker=>console.log('Worker started:',worker.url()));
+page.on('pageerror',error=>errors.push(error.message));
+page.on('console',msg=>{if(msg.type()==='error') console.log('Browser:',msg.text().slice(0,250));});
+try {
+  await page.goto(`http://127.0.0.1:${server.httpServer.address().port}`);
+  if (liveFixture) {
+    await page.getByLabel('Jewellery category').selectOption(liveFixture.category);
+    await page.getByLabel('Reference image').setInputFiles(liveFixture.reference);
+    const started = Date.now();
+    await page.getByRole('button',{name:'Search by image',exact:true}).click();
+    await page.getByRole('status').filter({hasText:/close match.*found|No close matches found/}).waitFor({timeout:240000});
+    assert.equal(await page.getByRole('alert').count(),0);
+    assert.ok(await page.locator('article').count()>0);
+    assert.equal(await page.locator('article').first().getByText(liveFixture.title,{exact:true}).count(),1);
+    assert.equal(selectionWrites.length,0);
+    console.log(JSON.stringify({liveSupplierImages:liveFixture.products.length,elapsedSeconds:(Date.now()-started)/1000,returnedMatches:await page.locator('article').count(),status:await page.getByRole('status').allTextContents()}));
+    await page.screenshot({path:'/private/tmp/jewel-live-image-search.png',fullPage:true});
+    console.log('PASS: real published supplier-image retrieval, storage CORS, exact reference ranked first, no selection writes.');
+  } else {
+  await page.getByText('Temple necklace',{exact:true}).waitFor();
+  await page.getByRole('textbox').fill('silver');
+  assert.equal(await page.locator('article').count(),1);
+  await page.getByRole('textbox').fill('');
+  await page.getByLabel('Jewellery category').selectOption('necklace');
+  assert.equal(await page.locator('article').count(),2);
+  await page.getByLabel('Reference image').setInputFiles({name:'bad.svg',mimeType:'image/svg+xml',buffer:Buffer.from('<svg/>')});
+  await page.getByRole('alert').filter({hasText:'Choose a JPG'}).waitFor();
+  await page.getByLabel('Reference image').setInputFiles(path.join(web,'public/image/neclace.png'));
+  assert.equal(await page.getByRole('textbox').isDisabled(),true);
+  await page.screenshot({path:'/private/tmp/jewel-catalogue-search-desktop.png',fullPage:true});
+  await page.setViewportSize({width:393,height:852});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  await page.screenshot({path:'/private/tmp/jewel-catalogue-search-mobile.png',fullPage:true});
+  await page.getByRole('button',{name:'Search by image',exact:true}).click();
+  // Actual model download + inference, no fake Worker or canned result.
+  await page.getByRole('status').filter({hasText:/close match.*found|No close matches found/}).waitFor({timeout:240000});
+  assert.equal(await page.getByRole('alert').count(),0);
+  assert.equal(await page.locator('article').count(),1);
+  assert.equal(await page.locator('article').first().getByText('Temple necklace').count(),1);
+  assert.equal(selectionWrites.length,0);
+  await page.getByRole('button',{name:'Publish All',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('button[data-selected=true]'));
+  assert.deepEqual(selectionWrites,[{product_id:'necklace',selected:true}]);
+  await page.getByRole('button',{name:'Search by image',exact:true}).click();
+  await page.getByRole('button',{name:'Cancel search'}).click();
+  await page.getByRole('button',{name:'Clear image'}).click();
+  assert.equal(await page.locator('article').count(),2);
+  assert.equal(await page.getByRole('textbox').isDisabled(),false);
+  await page.getByLabel('Jewellery category').selectOption('rings');
+  assert.equal(await page.locator('article').count(),1);
+  await page.getByLabel('Reference image').setInputFiles(path.join(web,'public/image/neclace.png'));
+  await page.getByRole('button',{name:'Search by image',exact:true}).click();
+  await page.getByRole('status').filter({hasText:'No close matches found'}).waitFor({timeout:120000});
+  assert.equal(await page.locator('article').count(),0);
+  await page.getByLabel('Reference image').setInputFiles({name:'broken.jpg',mimeType:'image/jpeg',buffer:Buffer.from('invalid image bytes')});
+  await page.getByRole('button',{name:'Search by image',exact:true}).click();
+  await page.getByRole('alert').waitFor({timeout:120000});
+  await page.getByRole('button',{name:'Clear image'}).click();
+  assert.deepEqual(errors,[]);
+  console.log('PASS: real model self-match, no implicit selection, bulk publication restricted to matches, category isolation, weak-match withholding, text search, invalid image, cancellation, clear, desktop/mobile layout.');
+  }
+} catch(error) {
+  console.log('State:',await page.locator('body').innerText());
+  throw error;
+} finally {await browser.close();await server.close();await rm(fixture,{recursive:true,force:true});}

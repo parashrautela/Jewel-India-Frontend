@@ -1,12 +1,19 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/Button";
 
 const OTP_VALIDITY_SECONDS = 60;  // OTP expires in 60 seconds
 const RESEND_COOLDOWN_SECONDS = 30; // wait between resends
 const MAX_RESENDS = 5;
+
+// What happens after this step depends on the door the person chose.
+const DOOR_NOTES = {
+  wholesaler: "Wholesaler accounts are verified by our team before they go live.",
+  retailer: "Retailer accounts join on a wholesaler's invitation and are verified before they go live.",
+};
+const NO_DOOR_NOTE = "You'll choose how you use Jewels India after this step.";
 
 /**
  * OtpForm — 8-digit OTP entry with:
@@ -18,6 +25,8 @@ const MAX_RESENDS = 5;
  */
 export function OtpForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const doorRole = searchParams.get("role");
   const [digits, setDigits] = useState(["", "", "", "", "", "", "", ""]);
   const [verifying, setVerifying] = useState(false);
   const [resending, setResending] = useState(false);
@@ -203,9 +212,9 @@ export function OtpForm() {
 
     // Success — route based on user status
     if (data.isNewUser) {
-      const searchParams = new URL(window.location.href).searchParams;
-      const paramRole = searchParams.get("role") || sessionStorage.getItem("referral_role") || "wholesaler";
-      router.push(`/entry_page/signup/set-password?role=${paramRole}`);
+      // The door rides along; with none chosen, set-password sends them to /select-role.
+      const paramRole = doorRole || sessionStorage.getItem("referral_role");
+      router.push(`/entry_page/signup/set-password${paramRole ? `?role=${paramRole}` : ""}`);
     } else {
       // Returning user
       if (data.userRole === "retailer") {
@@ -220,6 +229,8 @@ export function OtpForm() {
         } else {
           router.push("/dashboard/employee");
         }
+      } else if (data.userRole === "employee") {
+        router.push("/dashboard/employee");
       } else {
         router.push("/dashboard/wholesaler");
       }
@@ -376,7 +387,7 @@ export function OtpForm() {
         {/* Info Note */}
         <div className="pt-[40px] md:pt-[60px]">
             <p className="text-[12px] text-[#9CA3AF] text-left leading-relaxed">
-               Only wholesalers accounts will be verified. Retailers will require an invite to sign in.
+               {DOOR_NOTES[doorRole] || NO_DOOR_NOTE}
             </p>
         </div>
 

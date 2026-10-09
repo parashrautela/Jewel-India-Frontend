@@ -23,7 +23,11 @@ alter table if exists public.products
   add column if not exists stone_weight        numeric,
   add column if not exists raw_image_url       text,
   add column if not exists processed_image_url text,
-  add column if not exists is_published        boolean default true,
+  add column if not exists is_published        boolean default false,
+  add column if not exists ai_processing_state text default 'none',
+  add column if not exists ai_processing_run_id uuid,
+  add column if not exists ai_verified_output_urls text[] default '{}',
+  add column if not exists ai_completed_at     timestamptz,
   add column if not exists created_at          timestamptz default now();
 
 -- Drop old policies (if any) so we can recreate them safely

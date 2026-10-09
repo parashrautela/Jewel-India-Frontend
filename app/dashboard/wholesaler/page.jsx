@@ -4,6 +4,7 @@ import HeroUploadSection from "../../../components/wholesaler/HeroUploadSection"
 import OverviewSection from "../../../components/wholesaler/OverviewSection";
 import WeeklyReviewBanner from "../../../components/wholesaler/WeeklyReviewBanner";
 import CatalogueSection from "../../../components/wholesaler/CatalogueSection";
+import ReferralManager from "../../../components/wholesaler/referral/ReferralManager";
 import CreditBadge from "../../../components/wholesaler/CreditBadge";
 
 export default async function WholesalerDashboardPage() {
@@ -110,6 +111,7 @@ export default async function WholesalerDashboardPage() {
         usedUploads={usedUploads}
         uploadLimit={uploadLimit}
       />
+      <div className="px-4 md:px-10 pb-6"><ReferralManager key={user?.id} home accountId={user?.id} /></div>
       <CatalogueSection />
     </main>
   );

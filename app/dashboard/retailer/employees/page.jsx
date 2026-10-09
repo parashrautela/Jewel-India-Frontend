@@ -53,6 +53,10 @@ export default function RetailerEmployeesPage() {
 
   useEffect(() => {
     fetchEmployees();
+    // The add-employee modal announces a new login or invitation.
+    const onChanged = () => fetchEmployees(true);
+    window.addEventListener("employees:changed", onChanged);
+    return () => window.removeEventListener("employees:changed", onChanged);
   }, []);
 
   const handleToggleStatus = async (id, isActive) => {
@@ -64,7 +68,10 @@ export default function RetailerEmployeesPage() {
           status: isActive ? "active" : "inactive"
         }),
       });
-      if (!res.ok) throw new Error("Failed to update status");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to update status");
+      }
 
       // Update cache in-place without refetch
       employeesCache.data = employeesCache.data.map(e =>
@@ -82,7 +89,10 @@ export default function RetailerEmployeesPage() {
       const res = await fetch(`/api/employees/${id}`, {
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("Failed to delete employee");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to remove employee");
+      }
 
       employeesCache.data = employeesCache.data.filter(e => e.id !== id);
       employeesCache.timestamp = Date.now();

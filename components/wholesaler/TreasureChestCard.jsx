@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCredits } from "../../context/CreditsContext";
 
 export default function TreasureChestCard() {
-  const { wallet, isLoading } = useCredits();
+  const { wallet, isLoading, error } = useCredits();
 
   // Only show shimmer when actively loading; if wallet is null after load, backend isn't ready yet
   if (isLoading) {
@@ -75,11 +75,13 @@ export default function TreasureChestCard() {
                   {available}
                 </span>
                 <span className="text-xs md:text-sm font-medium text-celestique-muted font-sans">
-                  credits available
+                  {wallet.mode === "daily" ? `/ ${wallet.daily_allowance.toLocaleString("en-IN")} available today` : "credits available"}
                 </span>
               </div>
 
-              {expiryText && (
+              {wallet.mode === "daily" && <p className="mt-2 text-xs text-celestique-muted">Resets to 2,000 at 12:00 AM IST. Unused credits do not carry over.</p>}
+              {error && <p role="status" className="mt-2 text-xs text-red-700">Balance unavailable. Please refresh.</p>}
+              {wallet.mode !== "daily" && expiryText && (
                 <div className="flex items-center gap-1 text-[11px] text-[#B45309] font-medium mt-1">
                   <span>⏳</span>
                   <span>{expiryText}</span>
@@ -94,7 +96,7 @@ export default function TreasureChestCard() {
               View History & Rates →
             </span>
             <div className="px-5 py-2.5 rounded-xl bg-celestique-dark hover:bg-black text-white text-xs font-bold tracking-wide transition-all shadow-xs group-hover:shadow-md flex items-center gap-1.5">
-              <span>Top Up</span>
+              <span>View credits</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7l7 7-7 7" />
               </svg>

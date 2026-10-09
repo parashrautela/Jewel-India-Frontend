@@ -1,101 +1,116 @@
 import { createClient } from "../../../lib/supabase/server";
-import { supabaseAdmin } from "../../../lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { getWholesalerDestination } from "../../../lib/actions/auth";
+import { messageForDbError } from "../../../lib/utils/dbMessages";
 
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url);
   const code  = searchParams.get("code");
   const oauthError = searchParams.get("error");
 
+  // Staff start from /employee-login; everyone else from the entry page.
+  const isStaff = searchParams.get("staff") === "1";
+  const errorPage = isStaff ? "/employee-login" : "/entry_page/signup";
+
+  function redirectWithError(message) {
+    const url = new URL(`${origin}${errorPage}`);
+    url.searchParams.set("error", message);
+    return NextResponse.redirect(url.toString());
+  }
+
   if (oauthError) {
     const description = searchParams.get("error_description") ?? oauthError;
-    const url = new URL(`${origin}/entry_page/signup`);
-    url.searchParams.set("error", description);
-    return NextResponse.redirect(url.toString());
+    return redirectWithError(description);
   }
   if (code) {
     const supabase = await createClient();
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!exchangeError) {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const isNewUser = user && (Date.now() - new Date(user.created_at).getTime() < 60000);
-
-      // Try metadata first (fastest — from JWT)
-      let role = user?.user_metadata?.role;
-
-      // Fallback: query profiles table if metadata is empty BUT only if not a new user
-      // (because the DB trigger auto-inserts 'wholesaler' for brand new dimensionless users)
-      if (!role && user && !isNewUser) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .maybeSingle();
-        role = profile?.role;
-      }
-
-      // If no valid role exists, this is a first-time Google sign-in.
-      if (!role) {
-        const requestedRole = searchParams.get("role") === "retailer" ? "retailer" : "wholesaler";
-
-        // Use the SERVER client so the browser's session cookie gets refreshed with the new role
-        await supabase.auth.updateUser({
-          data: { role: requestedRole }
-        });
-        
-        // Ensure they exist in the profiles table correctly (overwriting trigger defaults)
-        await supabaseAdmin.from("profiles").upsert({
-          id: user.id,
-          email: user.email || user.phone,
-          role: requestedRole
-        }, { onConflict: "id" });
-
-        const redirectDest = requestedRole === "retailer" ? "/onboard-retailer" : "/onboard";
-        return NextResponse.redirect(`${origin}${redirectDest}`);
-      }
-
-      const next = searchParams.get("next");
-      if (next) {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
-
-      if (role === "wholesaler") {
-        // If the role was missing from the JWT but found in the database, inject it now
-        if (!user?.user_metadata?.role) {
-          await supabase.auth.updateUser({
-            data: { role: "wholesaler" }
-          });
-        }
-        
-        const dest = await getWholesalerDestination(user.id);
-        if (dest.includes("error=banned")) {
-          await supabase.auth.signOut();
-        }
-        return NextResponse.redirect(`${origin}${dest}`);
-      }
-      
-      if (role === "retailer") {
-        if (!user?.user_metadata?.role) {
-          await supabase.auth.updateUser({
-            data: { role: "retailer" }
-          });
-        }
-        return NextResponse.redirect(`${origin}/`); // Will be caught by middleware and handled
-      }
+    if (exchangeError) {
+      return redirectWithError(exchangeError.message);
     }
 
-    // Exchange failed
-    const url = new URL(`${origin}/entry_page/signup`);
-    url.searchParams.set("error", exchangeError.message);
-    return NextResponse.redirect(url.toString());
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    // Password-recovery links carry `next`; honour it whatever the role.
+    const next = searchParams.get("next");
+    if (next) {
+      return NextResponse.redirect(`${origin}${next}`);
+    }
+
+    // Try metadata first (fastest — from JWT)
+    let role = user?.user_metadata?.role;
+
+    // Fallback: query profiles table if metadata is empty
+    if (!role && user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+      role = profile?.role;
+    }
+
+    // No role: this account has not been through a door yet.
+    if (!role) {
+      // Staff door — the invitation is matched on the provider's email address.
+      if (isStaff) {
+        const { error: claimError } = await supabase.rpc("claim_staff_invite");
+        if (claimError) {
+          // Nothing to link this account to; don't leave a roleless session behind.
+          await supabase.auth.signOut();
+          return redirectWithError(
+            messageForDbError(claimError, "We couldn't link this account to a store. Use the email address your store invited.")
+          );
+        }
+        return NextResponse.redirect(`${origin}/dashboard/employee`);
+      }
+
+      const requestedRole = searchParams.get("role");
+      const referralCode = searchParams.get("ref");
+
+      // Retailer door — only with an invitation in hand; otherwise
+      // /select-role asks for one before the role is set.
+      if (requestedRole === "retailer" && referralCode) {
+        const { error: roleError } = await supabase.rpc("set_my_role", { p_role: "retailer" });
+        if (roleError) {
+          return redirectWithError(messageForDbError(roleError, roleError.message));
+        }
+        return NextResponse.redirect(`${origin}/onboard-retailer`);
+      }
+
+      if (requestedRole === "wholesaler") {
+        const { error: roleError } = await supabase.rpc("set_my_role", { p_role: "wholesaler" });
+        if (roleError) {
+          return redirectWithError(messageForDbError(roleError, roleError.message));
+        }
+        return NextResponse.redirect(`${origin}/onboard`);
+      }
+
+      return NextResponse.redirect(`${origin}/select-role`);
+    }
+
+    if (role === "wholesaler") {
+      const dest = await getWholesalerDestination(user.id);
+      if (dest.includes("error=banned")) {
+        await supabase.auth.signOut();
+      }
+      return NextResponse.redirect(`${origin}${dest}`);
+    }
+
+    if (role === "retailer") {
+      return NextResponse.redirect(`${origin}/`); // Will be caught by middleware and handled
+    }
+
+    if (role === "employee") {
+      return NextResponse.redirect(`${origin}/dashboard/employee`);
+    }
+
+    return NextResponse.redirect(`${origin}/select-role`);
   }
 
   // No code and no error — unexpected state
   return NextResponse.redirect(`${origin}/entry_page/signup?error=oauth`);
 }
-

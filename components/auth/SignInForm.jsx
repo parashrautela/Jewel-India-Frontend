@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "../../lib/actions/auth";
+import { initiateGoogleOAuth, initiateAppleOAuth } from "../../lib/actions/oauth";
 
 export function SignInForm() {
   const searchParams = useSearchParams();
@@ -20,6 +21,7 @@ export function SignInForm() {
 
   const [error, setError] = useState(decodedUrlError);
   const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState(null);
   const [identity, setIdentity] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -58,6 +60,19 @@ export function SignInForm() {
       setLoading(false);
     }
     // On success, signIn server action redirects to /dashboard/wholesaler
+  }
+
+  async function handleSocial(provider) {
+    setError(null);
+    setSocialLoading(provider);
+    const redirectTo = `${window.location.origin}/auth/callback`;
+    const result = provider === "google"
+      ? await initiateGoogleOAuth(redirectTo)
+      : await initiateAppleOAuth(redirectTo);
+    if (result?.error) {
+      setError(result.error);
+      setSocialLoading(null);
+    }
   }
 
   const [rememberMe, setRememberMe] = useState(false);
@@ -175,6 +190,14 @@ export function SignInForm() {
           {loading ? "Signing in..." : "Continue"}
         </button>
       </div>
+
+      <div className="text-center text-[11px] text-[#9CA3AF]">OR</div>
+      <button type="button" onClick={() => handleSocial("google")} disabled={loading || socialLoading !== null} className="w-full h-[48px] border border-[#E5E7EB] rounded-[8px] bg-white text-[14px] font-medium disabled:opacity-60">
+        {socialLoading === "google" ? "Redirecting..." : "Continue with Google"}
+      </button>
+      <button type="button" onClick={() => handleSocial("apple")} disabled={loading || socialLoading !== null} className="w-full h-[48px] rounded-[8px] bg-black text-white text-[14px] font-semibold disabled:opacity-60">
+        {socialLoading === "apple" ? "Redirecting..." : "Continue with Apple"}
+      </button>
 
       {/* Terms Footer */}
       <div className="text-center mt-4">

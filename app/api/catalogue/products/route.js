@@ -1,3 +1,4 @@
+import { catalogueTypeAliases } from "../../../../lib/config/jewelleryTypes.mjs";
 import { NextResponse } from "next/server";
 import { createClient } from "../../../../lib/supabase/server";
 
@@ -40,6 +41,7 @@ export async function GET(request) {
        stone_weight,
        processed_image_url,
        generated_image_urls,
+       showcase_image_urls,
        raw_image_url,
        image_url,
        wholesaler_email,
@@ -50,8 +52,7 @@ export async function GET(request) {
     .eq("wholesaler_id", user.id);
 
   if (category && category.toLowerCase() !== "all") {
-    const baseSlug = category.toLowerCase().replace(/s$/, '');
-    query = query.in("jewellery_type", [baseSlug, baseSlug + 's']);
+    query = query.in("jewellery_type", catalogueTypeAliases(category));
   }
 
   // Handle array filters

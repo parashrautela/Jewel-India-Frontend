@@ -10,6 +10,10 @@ export async function POST(request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (user.user_metadata?.role !== "retailer") {
+      return NextResponse.json({ error: "Retailer access required" }, { status: 403 });
+    }
+
     const { product_id, selected } = await request.json();
 
     if (!product_id || typeof selected !== "boolean") {
@@ -31,6 +35,14 @@ export async function POST(request) {
     }
 
     if (selected) {
+      const { data: product, error: productError } = await supabaseAdmin
+        .from("products")
+        .select("id")
+        .eq("id", product_id)
+        .eq("is_published", true)
+        .maybeSingle();
+      if (productError) return NextResponse.json({ error: "Could not verify product availability" }, { status: 503 });
+      if (!product) return NextResponse.json({ error: "Product is not available" }, { status: 404 });
       // Insert selection
       const { error: insertError } = await supabaseAdmin
         .from("retailer_selections")

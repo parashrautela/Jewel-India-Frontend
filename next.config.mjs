@@ -57,6 +57,14 @@ const nextConfig = {
         { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
       ] },
       {
+        source: '/share/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'private, no-store, max-age=0' },
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+        ],
+      },
+      {
         source: '/.well-known/apple-app-site-association',
         headers: [
           { key: 'Content-Type', value: 'application/json' },

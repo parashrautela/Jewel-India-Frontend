@@ -6,11 +6,13 @@ function UploadCard({ product }) {
   const [imgError, setImgError] = useState(false);
   const [variantIdx, setVariantIdx] = useState(0);
 
-  const variants =
-    Array.isArray(product.generated_image_urls) &&
-    product.generated_image_urls.length > 0
-      ? product.generated_image_urls
-      : [product.processed_image_url].filter(Boolean);
+  const variants = Array.from(new Set([
+    ...(Array.isArray(product.showcase_image_urls) ? product.showcase_image_urls : []),
+    ...(Array.isArray(product.generated_image_urls) ? product.generated_image_urls : []),
+    product.processed_image_url,
+    product.image_url,
+    product.raw_image_url,
+  ].filter(Boolean)));
 
   const hasMultiple = variants.length > 1;
   const activeUrl = variants[variantIdx] ?? null;

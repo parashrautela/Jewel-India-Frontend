@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useRetailerOnboard } from "../../../context/RetailerOnboardContext";
 import imageCompression from "browser-image-compression";
 
-export function RetailerStep3Footer({ isFormValid, onSubmitAttempt }) {
+export function RetailerStep3Footer({ isFormValid, referralCode, onSubmitAttempt }) {
   const router = useRouter();
   const {
     name, aadhar, frontImage, backImage,
@@ -55,10 +55,11 @@ export function RetailerStep3Footer({ isFormValid, onSubmitAttempt }) {
       formData.append("state", selectedState);
       formData.append("city", selectedCity);
 
-      // Append referral info if it exists
-      const refCode = sessionStorage.getItem("referral_code");
-      if (refCode) {
-        formData.append("referralCode", refCode);
+      // The invitation always goes along; a new application is refused without it.
+      // Keep it for a retry so the field doesn't have to be filled twice.
+      if (referralCode) {
+        formData.append("referralCode", referralCode);
+        sessionStorage.setItem("referral_code", referralCode);
       }
 
       // Parallel compression for all files

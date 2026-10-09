@@ -1,3 +1,42 @@
+# Jewel India web app
+
+## Invitations: development and release
+
+The invitation API is hosted by this Next.js app. The iOS app calls the host configured as `SITE_URL` in `wholesaler ios/Config.xcconfig`; changing or rebuilding SwiftUI does not deploy these server routes.
+
+- `GET /api/referral/manage`: account settings, gift limits and invitation history.
+- `POST /api/referral/manage`: save the account’s “Don’t show me again” preference.
+- `POST /api/referral/generate`: explicitly create a single-use code and reserve the extra gift with an idempotency key.
+- `DELETE /api/referral/manage`: cancel an unused funded invitation.
+- `validate` and `claim`: existing retailer code/onboarding attribution.
+
+The first-time guide renders while settings load and stays usable when that request fails. A preference is saved locally only after the signed-in server accepts it. Missing routes returning HTML 404 now show a service-update message, rather than a JSON parsing error. Opening the guide never generates a code or spends credits.
+
+The server requires `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and `NEXT_PUBLIC_SITE_URL`; the browser also needs the public anon key. Never add a service-role key to a browser bundle or iOS configuration.
+
+Before shipping an invitation-enabled iOS build, apply and reconcile the database prerequisites and migrations 015–018, deploy this Next app to the actual native `SITE_URL`, and verify activation using [the release handoff](../plans/invitation-referrals-release.md). Migration 018 preserves purchased credit lots in place, retaining their receipts and remaining units as a non-expiring bonus balance. It does not issue replacement grants.
+
+Run the read-only release check from this repository:
+
+```sh
+node scripts/check-invitation-backend.mjs
+# Optional: JEWEL_SITE_URL=https://your-native-api-host.example node scripts/check-invitation-backend.mjs
+```
+
+It checks for JSON 401 on the unauthenticated management endpoint, required tables/functions and active daily/referral flags. It creates no codes and changes no balances. Local build success is not proof of a deployed backend.
+
+As audited on 3 October 2026, the configured live host returns HTML 404 for `/api/referral/manage`; the live database lacks `credit_program`, referral settings/generation RPCs and the new reporting/preferences schema. Production generation is therefore unavailable until rollout. The local recovery/accounting changes have not been published.
+
+Local verification:
+
+```sh
+npm run build -- --webpack
+node --experimental-vm-modules --test tests/referral-api.test.mjs
+JEWEL_BROWSER_RUNTIME=/path/to/browser-runtime/node_modules node tests/referral-browser.mjs
+```
+
+The browser test covers the actual component with an HTML 404, visible first-time guide, unsaved failed preference, retry recovery, explicit generation, response-loss replay and copy. Accounting is separately tested with real disposable PostgreSQL; see the release handoff for commands.
+
 <!-- # Jewel India 💎
 ### Premium Jewelry Wholesale Platform
 

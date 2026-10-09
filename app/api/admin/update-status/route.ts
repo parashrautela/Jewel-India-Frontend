@@ -1,7 +1,13 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { isAdminRequest } from '@/lib/utils/adminAuth'
+import { DB_MESSAGES } from '@/lib/utils/dbMessages'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function PATCH(req: NextRequest) {
+  if (!isAdminRequest(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const body = await req.json()
 
   const {
@@ -37,6 +43,13 @@ export async function PATCH(req: NextRequest) {
     .select()
 
   if (error) {
+    // Nobody is verified without an inviter — the retailer has to add their code first.
+    if (error.message?.includes('RETAILER_HAS_NO_INVITER')) {
+      return NextResponse.json(
+        { error: DB_MESSAGES.RETAILER_HAS_NO_INVITER, code: 'RETAILER_HAS_NO_INVITER' },
+        { status: 409 }
+      )
+    }
     return NextResponse.json(
       { error: error.message },
       { status: 500 }

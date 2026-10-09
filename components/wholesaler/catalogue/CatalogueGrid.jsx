@@ -14,8 +14,11 @@ function ProductDetailModal({ product, onClose, onUpdate, wholesalerId, isLimitR
 
   // TODO: replace with Supabase product/processed/{product.sku} fetch once SKU is available
   const images = Array.from(new Set([
-    product.processed_image_url || product.image_url || product.raw_image_url,
+    ...(product.showcase_image_urls || []),
     ...(product.generated_image_urls || []),
+    product.processed_image_url,
+    product.image_url,
+    product.raw_image_url,
   ].filter(Boolean)));
 
   const hasImages = images.length > 0;
@@ -531,7 +534,7 @@ const CatalogueProductCard = memo(function CatalogueProductCard({ product, onCli
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Use the best available image URL
-  const imgUrl = product.processed_image_url || product.generated_image_urls?.[0] || product.image_url || product.raw_image_url;
+  const imgUrl = product.showcase_image_urls?.[0] || product.generated_image_urls?.[0] || product.processed_image_url || product.image_url || product.raw_image_url;
 
   const title = product.title || (product.jewellery_type ? product.jewellery_type.charAt(0).toUpperCase() + product.jewellery_type.slice(1) : "Jewelry Piece");
   const weight = product.net_weight ? `${product.net_weight}g` : "";

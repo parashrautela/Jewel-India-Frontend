@@ -2,12 +2,6 @@
 
 import Link from "next/link";
 
-const CREDIT_PACKS = [
-  { id: "starter", name: "Starter Pack", credits: 50, popular: false },
-  { id: "growth", name: "Studio Pack", credits: 250, popular: true },
-  { id: "pro", name: "Enterprise Vault", credits: 1000, popular: false },
-];
-
 export default function InsufficientCreditsModal({
   isOpen,
   onClose,
@@ -80,27 +74,7 @@ export default function InsufficientCreditsModal({
             </div>
           </div>
 
-          {/* Pack preview options */}
-          <div className="flex flex-col gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-celestique-muted">
-              Available Credit Packs
-            </span>
-            <div className="grid grid-cols-3 gap-2 text-center text-xs">
-              {CREDIT_PACKS.map((pack) => (
-                <div
-                  key={pack.id}
-                  className={`p-2.5 rounded-xl border flex flex-col items-center justify-center ${
-                    pack.popular
-                      ? "border-[#D4AF37] bg-[#FAF8F5]"
-                      : "border-celestique-taupe bg-white"
-                  }`}
-                >
-                  <span className="font-bold text-celestique-dark">{pack.credits}</span>
-                  <span className="text-[10px] text-celestique-muted">{pack.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-950">Your daily allowance resets to 2,000 credits at 12:00 AM IST. Unused credits do not carry over. Try again after the reset.</p>
 
           {/* Action CTAs */}
           <div className="flex flex-col gap-2 pt-2">
@@ -109,7 +83,7 @@ export default function InsufficientCreditsModal({
               onClick={onClose}
               className="w-full py-3.5 rounded-full bg-celestique-dark hover:bg-black text-white text-xs font-bold uppercase tracking-wider transition-all text-center shadow-sm"
             >
-              Go to Treasure Chest to Top Up →
+              View credits and history →
             </Link>
             <button
               type="button"
