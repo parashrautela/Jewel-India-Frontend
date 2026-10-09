@@ -5,7 +5,11 @@ import Link from "next/link";
 import { useCredits } from "../../context/CreditsContext";
 import { fetchLedger } from "../../lib/supabase/credits-queries";
 
-function humanTitle(kind, featureKey, metadata) {
+function humanTitle(kind, featureKey, metadata, referenceType) {
+  if(referenceType === "invitation_funding") return kind === "refund" ? "Invitation gift refund" : "Invitation gift reserved";
+  if(referenceType === "invitation_gift") return "Retailer invitation gift";
+  if(referenceType === "purchased_carryover") return "Purchased credits preserved";
+  if(referenceType === "referral_bonus") return "Verified referral reward";
   if (kind === "debit") {
     if (featureKey === "chamak.generate") return "Chamak AI Fusion";
     if (featureKey === "chamak.generate_custom") return "Chamak Fusion (Custom Photos)";
@@ -70,6 +74,7 @@ export default function CreditWalletPage({ dashboard = "/dashboard/wholesaler" }
 
   return (
     <div className="min-h-screen bg-[#FEFEFE] pb-20">
+      {wallet?.mode === "daily" && <p className="text-center text-sm p-3">Daily: {wallet.daily_available ?? wallet.available} · Bonus: {wallet.bonus_available ?? 0} · Bonuses stay until spent.</p>}
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-celestique-taupe px-4 md:px-10 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -86,7 +91,7 @@ export default function CreditWalletPage({ dashboard = "/dashboard/wholesaler" }
           <div className="flex items-center gap-2">
             <span className="text-xl">🪙</span>
             <h1 className="font-cirka text-xl md:text-2xl font-bold text-celestique-dark">
-              Daily Credits
+              Credits
             </h1>
           </div>
         </div>
@@ -138,7 +143,7 @@ export default function CreditWalletPage({ dashboard = "/dashboard/wholesaler" }
 
               {walletError && <p role="alert" className="text-sm text-red-700">{walletError}</p>}
               {wallet?.mode === "daily" && <p className="text-sm text-celestique-muted mt-3">
-                Your business receives 2,000 credits every day. Resets at midnight India time; unused credits do not carry over.
+                Your business receives 2,000 daily credits, refreshed at midnight India time. Daily credits expire; gift and referral bonuses stay until spent.
                 {wallet.shared_business_wallet && " Staff use the same business balance."}
               </p>}
               {(wallet?.legacy_preserved ?? 0) > 0 && <p className="text-xs text-celestique-muted">Previous credit records are preserved separately.</p>}
@@ -276,7 +281,7 @@ export default function CreditWalletPage({ dashboard = "/dashboard/wholesaler" }
                     })
                   : "";
 
-                const title = humanTitle(entry.kind, entry.feature_key, entry.metadata);
+                const title = humanTitle(entry.kind, entry.feature_key, entry.metadata, entry.reference_type);
 
                 return (
                   <div key={entry.id} className="py-3.5 flex items-center justify-between gap-4">

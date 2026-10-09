@@ -120,6 +120,8 @@ export default function EmployeeBottomNav({ hasUnreadQueries = false, latestOrde
 
   return (
     <nav
+      data-employee-nav
+      aria-label="Employee navigation"
       className="fixed bottom-5 left-1/2 z-[100] -translate-x-1/2 max-w-[95vw] sm:max-w-max gap-[2px] lg:gap-1"
       style={{
         background: "rgba(255,255,255,0.55)",
@@ -147,6 +149,9 @@ export default function EmployeeBottomNav({ hasUnreadQueries = false, latestOrde
         return (
           <Link
             key={item.name}
+            data-employee-nav-item
+            aria-current={isActive ? "page" : undefined}
+            aria-label={item.name}
             href={item.href}
             prefetch={true}
             className={`relative flex items-center gap-1.5 lg:gap-2 px-2.5 py-1.5 md:px-4 md:py-2 lg:px-5 lg:py-2.5 text-[11px] md:text-[12px] lg:text-[13px]`}
@@ -179,6 +184,7 @@ export default function EmployeeBottomNav({ hasUnreadQueries = false, latestOrde
       
       {isRetailer && (
         <button
+          data-employee-admin-switch
           onClick={handleSwitchToAdmin}
           className="flex items-center gap-1.5 lg:gap-2 px-3 py-1.5 md:px-4 md:py-2 lg:px-5 lg:py-2.5 ml-1 select-none text-[11px] md:text-[12px] lg:text-[13px]"
           style={{

@@ -10,6 +10,7 @@ export default function JoinLandingClient({
   businessName,
   wholesalerName,
   businessLogoUrl,
+  giftCredits,
 }) {
   const router = useRouter();
 
@@ -43,6 +44,8 @@ export default function JoinLandingClient({
           </div>
         </div>
 
+        {giftCredits >= 1000 && <p className="px-6 pt-6 text-center text-sm">You’ll receive {giftCredits.toLocaleString()} credits after Jewel India verifies your store. This gift stays until spent.</p>}
+        <div className="px-6 py-4 text-center"><p className="font-mono text-sm break-all select-all">Invitation code: {code}</p><p className="text-xs text-gray-500 mt-2">If you install the iPhone app, enter this code when joining.</p></div>
         {/* Bottom Button Section */}
         <div className={styles.buttonSection}>
           <button onClick={handleGetStarted} className={styles.ctaButton}>

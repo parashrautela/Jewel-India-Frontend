@@ -1,5 +1,4 @@
-import Image from "next/image";
-import UploadButton from "./UploadButton";
+import UploadDesignCard from "./UploadDesignCard";
 
 export default function HeroUploadSection({ businessName = "" }) {
   const displayName = businessName?.trim() || "Welcome";
@@ -12,25 +11,7 @@ export default function HeroUploadSection({ businessName = "" }) {
         <h1 className="text-[#1F2937] text-xl md:text-2xl font-medium font-sfpro">{displayName}</h1>
       </div>
 
-      {/* Banner */}
-      <div className="relative overflow-hidden h-[160px] md:h-[180px] rounded-xl border border-[#F3E8D6] shadow-sm bg-[#FFFDF9]">
-        {/* Background image */}
-        <Image
-          src="/image/heroframee.png"
-          alt="Add Jewellery Background"
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 80vw"
-          className="object-cover object-right md:object-center opacity-80"
-        />
-        
-        {/* Content */}
-        <div className="relative z-10 h-full flex flex-col justify-end items-center px-6 md:px-10 w-full pb-6">
-          <div>
-            <UploadButton />
-          </div>
-        </div>
-      </div>
+      <UploadDesignCard />
     </section>
   );
 }

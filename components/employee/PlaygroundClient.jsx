@@ -6,11 +6,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 const InfinityCanvas = dynamic(() => import("./InfinityCanvas"), {
   ssr: false,
-  loading: () => <div className="fixed inset-0 flex items-center justify-center bg-[#FAFAFA] text-gray-500 font-medium">Loading layout...</div>,
+  loading: () => <div data-employee-fullscreen className="fixed inset-0 flex items-center justify-center bg-[#FAFAFA] text-gray-500 font-medium">Loading layout...</div>,
 });
 
 const PlaygroundCatalogueGrid = dynamic(() => import("./PlaygroundCatalogueGrid"), {
-  loading: () => <div className="fixed inset-0 flex items-center justify-center bg-[#FAFAFA] text-gray-500 font-medium">Loading layout...</div>,
+  loading: () => <div data-employee-fullscreen className="fixed inset-0 flex items-center justify-center bg-[#FAFAFA] text-gray-500 font-medium">Loading layout...</div>,
 });
 
 export default function PlaygroundClient({ products, employeeId, retailerName }) {
@@ -144,7 +144,7 @@ export default function PlaygroundClient({ products, employeeId, retailerName })
   }
 
   return (
-    <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center bg-[#FAFAFA] text-gray-500 font-medium">Loading layout...</div>}>
+    <Suspense fallback={<div data-employee-fullscreen className="fixed inset-0 flex items-center justify-center bg-[#FAFAFA] text-gray-500 font-medium">Loading layout...</div>}>
       {viewMode === "playground" ? (
         <InfinityCanvas 
           products={products}

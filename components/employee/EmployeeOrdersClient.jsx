@@ -148,7 +148,7 @@ function OrderCard({ order, onUpdateStatus, onDeleteOrder, onBusinessClick }) {
   const wholesalerAddress = [w.city, w.state].filter(Boolean).join(", ") || "Wholesalers address";
 
   return (
-    <div className="flex flex-row gap-6 py-8 border-b border-gray-200 w-full items-start">
+    <div data-employee-order-card className="flex flex-row gap-6 py-8 border-b border-gray-200 w-full items-start">
 
       {/* Left: Image */}
       <div className="w-[140px] h-[160px] shrink-0 bg-gray-100 overflow-hidden rounded-[2px] border border-gray-200">
@@ -328,7 +328,7 @@ export default function EmployeeOrdersClient({ initialOrders }) {
   });
 
   return (
-    <div className="w-full bg-white min-h-screen pb-24">
+    <div data-employee-page="orders" className="w-full bg-white min-h-screen pb-24">
 
       {/* Header */}
       <div className="w-full max-w-3xl mx-auto px-6 pt-8 pb-4 relative">
@@ -348,12 +348,15 @@ export default function EmployeeOrdersClient({ initialOrders }) {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-0 border-b border-gray-200 mb-2">
+        <div data-employee-tabs className="flex items-center gap-0 border-b border-gray-200 mb-2">
           {tabs.map(tab => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
+                data-employee-tab
+                data-active={isActive}
+                aria-pressed={isActive}
                 onClick={() => handleTabChange(tab.id)}
                 className={`flex items-center gap-2 px-5 py-3 text-[13px] font-medium border-b-2 transition-all -mb-px ${
                   isActive

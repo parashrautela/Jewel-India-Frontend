@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEmployeeAppearance } from "@/context/EmployeeAppearanceContext";
 
 const QUESTIONS = [
   {
@@ -38,6 +39,7 @@ const QUESTIONS = [
 
 export default function QuestionnaireFlow({ businessName }) {
   const router = useRouter();
+  const { sarvamMode } = useEmployeeAppearance();
   const [currentStep, setCurrentStep] = useState(0);
   
   // Store answers as an object: { questionId: [selectedOptions] }
@@ -105,7 +107,7 @@ export default function QuestionnaireFlow({ businessName }) {
   };
 
   return (
-    <div className="w-full flex flex-col bg-white">
+    <div data-employee-page="questionnaire" className="w-full flex flex-col bg-white">
       {/* ── Hero Section — Full Viewport Height ── */}
       <section
         className="relative w-full flex flex-col items-center justify-start overflow-hidden"
@@ -113,6 +115,7 @@ export default function QuestionnaireFlow({ businessName }) {
       >
         {/* Background Image (Archway) */}
         <div 
+          data-employee-ornament
           className="absolute inset-0 z-0"
           style={{ 
             backgroundImage: "url('https://res.cloudinary.com/dcs0vuzwg/image/upload/v1778318369/home_bg_ryyopk.svg')",
@@ -136,7 +139,7 @@ export default function QuestionnaireFlow({ businessName }) {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-4 pt-48 pb-28">
+        <div data-employee-question-content className="relative z-10 flex flex-col items-center text-center px-4 pt-48 pb-28">
           <h1 className="font-serif text-[42px] md:text-[54px] text-[#2c1f18] mb-3 leading-tight">
             {businessName}
           </h1>
@@ -145,9 +148,9 @@ export default function QuestionnaireFlow({ businessName }) {
           </p>
 
           {/* Interactive Card */}
-          <div className="w-[85vw] max-w-[280px] md:max-w-[320px] lg:max-w-[380px] xl:max-w-[440px] rounded-[24px] overflow-hidden relative shadow-2xl flex flex-col" style={{ aspectRatio: "1/1" }}>
+          <div data-employee-question-card className="w-[85vw] max-w-[280px] md:max-w-[320px] lg:max-w-[380px] xl:max-w-[440px] rounded-[24px] overflow-hidden relative shadow-2xl flex flex-col" style={{ aspectRatio: "1/1" }}>
             {/* Full card background image */}
-            <div className="absolute inset-0">
+            <div data-employee-ornament className="absolute inset-0">
               <img
                 src="https://res.cloudinary.com/dcs0vuzwg/image/upload/v1778318370/home_fg_gtjkeu.svg"
                 alt="Card Background"
@@ -167,7 +170,7 @@ export default function QuestionnaireFlow({ businessName }) {
               </h3>
               
               {/* Options Grid */}
-              <div className="grid grid-cols-2 gap-x-12 gap-y-4 mb-2 flex-1 content-start overflow-y-auto pr-1" style={{ scrollbarWidth: 'none' }}>
+              <div data-employee-question-options className="grid grid-cols-2 gap-x-12 gap-y-4 mb-2 flex-1 content-start overflow-y-auto pr-1" style={{ scrollbarWidth: 'none' }}>
                 {currentQ.options.map(option => {
                   const isSelected = answers[currentQ.id].includes(option);
                   return (
@@ -176,6 +179,7 @@ export default function QuestionnaireFlow({ businessName }) {
                       className="flex items-center justify-between gap-4 w-full cursor-pointer group"
                     >
                       <span 
+                        data-employee-question-option
                         className="text-white/90 group-hover:text-white transition-colors select-none text-left leading-tight"
                         style={{ fontSize: "clamp(15px, 3.5vw, 19px)" }}
                       >
@@ -183,7 +187,7 @@ export default function QuestionnaireFlow({ businessName }) {
                       </span>
 
                       {/* Custom Checkbox Visual */}
-                      <div className="relative w-[26px] h-[26px] flex-shrink-0">
+                      <div data-employee-question-check-art className="relative w-[26px] h-[26px] flex-shrink-0">
                         {/* Base Empty Checkbox Layer */}
                         <img 
                           src="https://res.cloudinary.com/dcs0vuzwg/image/upload/v1778318365/tick_bg_wdfml1.svg"
@@ -202,8 +206,10 @@ export default function QuestionnaireFlow({ businessName }) {
                       
                       {/* Hidden actual input */}
                       <input 
+                        data-employee-question-checkbox
                         type={currentQ.type === "single" ? "radio" : "checkbox"} 
-                        className="hidden"
+                        className={sarvamMode ? "w-5 h-5 shrink-0" : "hidden"}
+                        name={currentQ.id}
                         checked={isSelected}
                         onChange={() => handleToggleOption(option)}
                       />

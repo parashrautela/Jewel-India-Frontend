@@ -34,10 +34,10 @@ export default function DesignerCollectionSection({ employee, businessName, desi
   if (!shuffledDesigns || shuffledDesigns.length === 0) return null;
 
   return (
-    <section className={`w-full pt-16 pb-40 ${selectedProduct ? "bg-transparent" : "bg-white"}`}>
+    <section data-employee-collection className={`w-full pt-16 pb-40 ${selectedProduct ? "bg-transparent" : "bg-white"}`}>
       <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
         {/* Section Header */}
-        <div className="mb-12 pl-4 md:pl-8 lg:pl-12">
+        <div data-employee-collection-heading className="mb-12 pl-4 md:pl-8 lg:pl-12">
           <h2 className="font-serif text-[32px] md:text-[40px] lg:text-[46px] text-[#111827] leading-tight mb-2 md:mb-3">
             Designer collection
           </h2>
@@ -50,10 +50,11 @@ export default function DesignerCollectionSection({ employee, businessName, desi
       <div className="flex flex-col lg:flex-row gap-8 items-stretch">
 
         {/* LEFT: 2-column grid — only actual designs */}
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12 md:gap-y-16">
+        <div data-employee-grid className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12 md:gap-y-16">
           {shuffledDesigns.map((design) => (
             <div 
               key={design.id} 
+              data-employee-product-card
               className="flex flex-col cursor-pointer group/card"
               onClick={() => setSelectedProduct(design)}
             >
@@ -66,7 +67,7 @@ export default function DesignerCollectionSection({ employee, businessName, desi
                 />
               </div>
               {/* Label */}
-              <span className="text-[13px] font-serif text-gray-700 text-center mt-4 tracking-wide line-clamp-1 px-2">
+              <span data-employee-product-title className="text-[13px] font-serif text-gray-700 text-center mt-4 tracking-wide line-clamp-1 px-2">
                 {design.title || "Untitled design"}
               </span>
             </div>
@@ -75,6 +76,7 @@ export default function DesignerCollectionSection({ employee, businessName, desi
 
         {/* RIGHT: Super tall vertical image — hidden on mobile & portrait */}
         <div
+          data-employee-collection-art
           className="hidden lg:block shrink-0 overflow-hidden relative shadow-2xl"
           style={{ width: "28%" }}
         >
@@ -92,6 +94,7 @@ export default function DesignerCollectionSection({ employee, businessName, desi
       {/* View All */}
       <div className="flex justify-center mt-12">
         <button
+          data-sarvam-action="secondary"
           onClick={() => router.push('/dashboard/employee/designs')}
           className="text-[11px] tracking-[0.25em] text-gray-500 underline underline-offset-8 decoration-gray-300 hover:text-black hover:decoration-black transition-all uppercase font-semibold"
         >

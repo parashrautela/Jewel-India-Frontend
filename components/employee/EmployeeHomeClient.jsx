@@ -3,11 +3,13 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/context/ThemeContext";
+import { useEmployeeAppearance } from "@/context/EmployeeAppearanceContext";
 import DesignerCollectionSection from "./DesignerCollectionSection";
 
 export default function EmployeeHomeClient({ employee, businessName, businessLogoUrl, designs }) {
   const router = useRouter();
   const { theme } = useTheme();
+  const { sarvamMode } = useEmployeeAppearance();
 
   useEffect(() => {
     router.prefetch("/dashboard/employee/wholesaler-gallery");
@@ -18,6 +20,39 @@ export default function EmployeeHomeClient({ employee, businessName, businessLog
   const bgImage = isMaharaja
     ? "https://res.cloudinary.com/dcs0vuzwg/image/upload/v1781085325/Maharaja_Theme_ymaqjt.svg"
     : "https://res.cloudinary.com/dcs0vuzwg/image/upload/v1778318369/home_bg_ryyopk.svg";
+
+  if (sarvamMode) {
+    return (
+      <div className="w-full flex flex-col employee-sarvam-home">
+        <section className="employee-sarvam-hero">
+          <img
+            src={businessLogoUrl || "https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777013959/jewel_logo_rhgin9.svg"}
+            alt={`${businessName} Logo`}
+            className="employee-sarvam-logo"
+            onError={(event) => {
+              event.currentTarget.onerror = null;
+              event.currentTarget.src = "https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777013959/jewel_logo_rhgin9.svg";
+            }}
+          />
+          <p className="employee-sarvam-eyebrow">Your store. Your collection.</p>
+          <h1 className="employee-sarvam-title">{businessName}</h1>
+          <p className="employee-sarvam-description">
+            Discover designs selected with precision, blending craftsmanship and ethnic style
+          </p>
+          <div className="employee-sarvam-hero-actions">
+            <button type="button" data-sarvam-action="primary" onClick={() => router.push("/dashboard/employee/wholesaler-gallery")}>
+              Catalogue
+            </button>
+            <button type="button" data-sarvam-action="secondary" onClick={() => router.push("/dashboard/employee/playground")}>
+              Infinite Canvas
+            </button>
+          </div>
+          <p className="employee-sarvam-hero-footnote">Jewellery, thoughtfully selected</p>
+        </section>
+        <DesignerCollectionSection employee={employee} businessName={businessName} designs={designs} />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col bg-white">

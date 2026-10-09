@@ -152,7 +152,7 @@ export default function PlaygroundCatalogueGrid({
   const weight = searchParams.get("weight");
 
   return (
-    <div className="fixed inset-0 w-screen h-screen bg-[#fcfcfc] overflow-hidden select-none z-50 flex flex-col">
+    <div data-employee-fullscreen data-employee-page="canvas-grid" className="fixed inset-0 w-screen h-screen bg-[#fcfcfc] overflow-hidden select-none z-50 flex flex-col">
       {/* Top Header */}
       <div className="w-full px-8 pt-7 pb-4 flex justify-between items-center bg-transparent shrink-0 z-10">
         <div className="flex justify-start items-center w-[160px]">
@@ -174,7 +174,7 @@ export default function PlaygroundCatalogueGrid({
 
         {/* Store Name Pill — frosted glass */}
         <div className="flex justify-center items-center flex-1">
-          <div className="bg-gradient-to-r from-white/30 via-white/55 to-white/30 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/50 rounded-full px-7 py-2.5 pointer-events-auto flex items-center gap-2">
+          <div data-employee-surface="pill" className="bg-gradient-to-r from-white/30 via-white/55 to-white/30 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/50 rounded-full px-7 py-2.5 pointer-events-auto flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-gray-400/60 shrink-0" />
             <h1 className="font-serif text-[17px] tracking-widest text-gray-800/90 whitespace-nowrap">
               {retailerName || "Jewel India"}
@@ -244,7 +244,7 @@ export default function PlaygroundCatalogueGrid({
             width: "280px",
           }}
         >
-          <div className="w-full bg-white/40 backdrop-blur-2xl border border-white/60 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-5 flex flex-col max-h-[80vh] overflow-x-hidden overflow-y-auto no-scrollbar">
+          <div data-employee-panel className="w-full bg-white/40 backdrop-blur-2xl border border-white/60 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-5 flex flex-col max-h-[80vh] overflow-x-hidden overflow-y-auto no-scrollbar">
             <div className="flex items-center gap-3 mb-6 shrink-0">
               <button
                 onClick={() => setSidebarOpen(false)}
@@ -312,7 +312,7 @@ export default function PlaygroundCatalogueGrid({
 
         {/* Bottom Filter Tags (Glassmorphism) */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none z-10">
-          <div className="bg-gradient-to-r from-white/30 via-white/55 to-white/30 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-white/40 rounded-full px-10 py-3 flex gap-8 pointer-events-auto items-center">
+          <div data-employee-surface="pill" className="bg-gradient-to-r from-white/30 via-white/55 to-white/30 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-white/40 rounded-full px-10 py-3 flex gap-8 pointer-events-auto items-center">
             {occasion && (
               <div className="flex flex-col items-center">
                 <span className="text-[8px] uppercase tracking-[0.15em] text-black/40 font-bold mb-0.5">Occasion</span>

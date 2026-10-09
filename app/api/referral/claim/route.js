@@ -23,7 +23,7 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const code = typeof body?.code === "string" ? body.code.trim() : "";
+    const code = typeof body?.code === "string" ? body.code.trim().toUpperCase() : "";
     if (!code) {
       return NextResponse.json({ error: "Invitation code is required." }, { status: 400 });
     }

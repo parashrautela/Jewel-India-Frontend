@@ -24,6 +24,7 @@ function DesignCard({ design, onClick }) {
   return (
     <div
       className="flex flex-col cursor-pointer group/card bg-white"
+      data-employee-product-card
       onClick={onClick}
     >
       {/* Image container — Full bleed */}
@@ -44,7 +45,7 @@ function DesignCard({ design, onClick }) {
       </div>
       {/* Label */}
       <div className="mt-4 text-center px-2">
-        <span className="font-serif text-[15px] text-gray-800 tracking-wide line-clamp-1">
+        <span data-employee-product-title className="font-serif text-[15px] text-gray-800 tracking-wide line-clamp-1">
           {title}
         </span>
       </div>
@@ -288,10 +289,11 @@ export default function EmployeeDesignsClient({ designs, categoryTabs, businessN
   );
 
   return (
-    <div className={`flex flex-col w-full min-h-screen pb-24 ${selectedProduct ? "bg-transparent" : "bg-white"}`}>
+    <div data-employee-page="designs" className={`flex flex-col w-full min-h-screen pb-24 ${selectedProduct ? "bg-transparent" : "bg-white"}`}>
 
       {/* Smart Sticky Header */}
       <div
+        data-employee-sticky
         className={`sticky z-40 bg-white/95 backdrop-blur-md transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1) w-full border-b border-gray-100 ${scrollState === 'top' ? 'translate-y-0 top-0 pt-8 pb-6 shadow-none' :
             scrollState === 'down' ? 'translate-y-0 top-0 pt-3 pb-3 shadow-sm' :
               '-translate-y-full top-0'
@@ -337,6 +339,8 @@ export default function EmployeeDesignsClient({ designs, categoryTabs, businessN
                     return (
                       <div
                         key={tab}
+                        data-employee-category
+                        data-active={isActive}
                         className="flex flex-col items-center gap-2 cursor-pointer group shrink-0"
                         onClick={() => setActiveCategory(key)}
                       >
@@ -403,7 +407,7 @@ export default function EmployeeDesignsClient({ designs, categoryTabs, businessN
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-16">
+            <div data-employee-grid className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-16">
               {currentDesigns.map((design) => (
                 <DesignCard
                   key={design.id}

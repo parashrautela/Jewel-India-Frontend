@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import ProductTiles from "./ProductTiles";
-import { TOKEN, UUID, remainingSessionMs } from "../../lib/wishlist/contract.mjs";
+import { TOKEN, UUID, remainingSessionMs, wishlistResponse } from "../../lib/wishlist/contract.mjs";
 
 export default function SharedWishlist() {
   const [token, setToken] = useState("");
@@ -19,9 +19,8 @@ export default function SharedWishlist() {
     const version = generation.current;
     try {
       const res = await fetch(`/api/shared-wishlist?session=${session.current}`, { cache: "no-store" });
-      const data = await res.json();
+      const data = await wishlistResponse(res);
       if (generation.current !== version || document.hidden) return;
-      if (!res.ok) throw new Error(data.message);
       setView({ ...data, receivedAt: Date.now() }); setNotice("");
     } catch (err) {
       if (generation.current === version) { setView(null); setNotice(err.message || "Couldn't check access. Please reconnect and try again."); }
@@ -71,8 +70,8 @@ export default function SharedWishlist() {
     setBusy(true); setNotice("");
     try {
       const res = await fetch("/api/shared-wishlist/claim", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      const data = await wishlistResponse(res);
+      if (!UUID.test(data.share_id ?? "")) throw new Error("Couldn't open this wishlist. Please try again.");
       session.current = data.share_id;
       window.history.replaceState(null, "", `/share/wishlist?session=${data.share_id}`);
       setToken(""); await loadContent();

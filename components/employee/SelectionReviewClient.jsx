@@ -255,14 +255,18 @@ export default function SelectionReviewClient() {
         </div>
       ) : viewingProduct ? (
         <>
-          {/* White Background layer behind pillars */}
+        {/* White Background layer behind pillars */}
           <div 
+            data-employee-fullscreen
+            data-employee-detail-base
             style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", overflow: "hidden" }} 
             className="bg-white z-[58] pointer-events-none" 
           />
 
           {/* Arch Background image container */}
           <div 
+            data-employee-fullscreen
+            data-employee-ornament
             style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", overflow: "hidden" }} 
             className="z-[59] pointer-events-none"
           >
@@ -307,7 +311,7 @@ export default function SelectionReviewClient() {
             )}
           </div>
 
-          <div className="fixed inset-0 overflow-y-auto z-[60] flex flex-col items-center pb-24 font-sans select-none bg-transparent">
+          <div data-employee-fullscreen className="fixed inset-0 overflow-y-auto z-[60] flex flex-col items-center pb-24 font-sans select-none bg-transparent">
 
           {/* Glassmorphic back button */}
           <button
@@ -336,6 +340,7 @@ export default function SelectionReviewClient() {
 
           {/* Main content wrapper centered inside the arch */}
           <div 
+            data-employee-detail-content
             className="relative w-full max-w-[400px] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] flex flex-col items-center"
             style={{ 
               paddingTop: "clamp(90px, 10vw, 115px)", 
@@ -346,7 +351,7 @@ export default function SelectionReviewClient() {
           >
 
             {/* Header section — centered, sits inside the white arch opening visually */}
-            <div className="flex flex-col items-center text-center mb-10 w-full">
+            <div data-employee-detail-heading className="flex flex-col items-center text-center mb-10 w-full">
               <div className="flex items-center justify-center gap-3 mb-3">
                 <span 
                   className="font-bold uppercase tracking-[0.2em] text-[#6e6e6e] font-sans"
@@ -385,7 +390,7 @@ export default function SelectionReviewClient() {
               allImages = allImages.slice(0, 4);
 
               return (
-                <div className="flex items-start justify-center gap-4 sm:gap-6 mb-12 relative w-full">
+                <div data-employee-detail-images className="flex items-start justify-center gap-4 sm:gap-6 mb-12 relative w-full">
 
                   {/* Main image container */}
                   <div
@@ -442,7 +447,7 @@ export default function SelectionReviewClient() {
             })()}
 
             {/* Specifications section */}
-            <div className="w-full grid grid-cols-1 sm:grid-cols-[210px_210px] md:grid-cols-[250px_250px] lg:grid-cols-[290px_290px] justify-between gap-y-8 mt-4">
+            <div data-employee-detail-specs className="w-full grid grid-cols-1 sm:grid-cols-[210px_210px] md:grid-cols-[250px_250px] lg:grid-cols-[290px_290px] justify-between gap-y-8 mt-4">
 
               {/* Left Column: MATERIAL & WEIGHT */}
               <div className="flex flex-col gap-6">
@@ -561,7 +566,7 @@ export default function SelectionReviewClient() {
 
           {/* Sidebar Overlay */}
           {isSidebarOpen && (
-            <div className="fixed inset-0 z-[70] flex justify-end">
+            <div data-employee-fullscreen className="fixed inset-0 z-[70] flex justify-end">
               <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setIsSidebarOpen(false)}></div>
               <div className="relative w-full max-w-[420px] bg-white h-full shadow-2xl flex flex-col animate-slide-in-right z-10">
 

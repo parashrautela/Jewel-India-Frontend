@@ -37,6 +37,7 @@ function ProductCard({ product, onClick, onLongPress }) {
   return (
     <div
       {...longPressProps}
+      data-employee-product-card
       className={`flex flex-col cursor-pointer group/card bg-white transition-all duration-300 ${
         longPressProps.isPressing ? "scale-95 opacity-80" : ""
       }`}
@@ -59,7 +60,7 @@ function ProductCard({ product, onClick, onLongPress }) {
       </div>
       {/* Label */}
       <div className="mt-4 text-center px-2">
-        <span className="font-serif text-[15px] text-gray-800 tracking-wide line-clamp-1">
+        <span data-employee-product-title className="font-serif text-[15px] text-gray-800 tracking-wide line-clamp-1">
           {title}
         </span>
       </div>
@@ -354,10 +355,11 @@ export default function WholesalerGalleryClient({ products, categoryTabs, initia
   };
 
   return (
-    <div className={`flex flex-col w-full min-h-screen pb-24 ${selectedProduct ? "bg-transparent" : "bg-white"}`}>
+    <div data-employee-page="catalogue" className={`flex flex-col w-full min-h-screen pb-24 ${selectedProduct ? "bg-transparent" : "bg-white"}`}>
 
       {/* Smart Sticky Header */}
       <div
+        data-employee-sticky
         className={`sticky z-40 bg-white/95 backdrop-blur-md transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1) w-full border-b border-gray-100 ${scrollState === 'top' ? 'translate-y-0 top-0 pt-8 pb-6 shadow-none' :
             scrollState === 'down' ? 'translate-y-0 top-0 pt-3 pb-3 shadow-sm' :
               '-translate-y-full top-0 pt-3 pb-3 shadow-sm'
@@ -366,7 +368,7 @@ export default function WholesalerGalleryClient({ products, categoryTabs, initia
         <div className="w-full max-w-7xl mx-auto px-4 md:px-8 flex flex-col transition-all duration-700 ease-in-out">
 
           {/* Top Title & Back - Hidden when scrolling down/up */}
-          <div className={`relative w-full flex items-center justify-center transition-all duration-700 ease-in-out overflow-hidden ${scrollState === 'top' ? 'max-h-[120px] opacity-100 mb-16' : 'max-h-0 opacity-0 pointer-events-none mb-0'}`}>
+          <div data-employee-browse-top data-expanded={scrollState === 'top'} className={`relative w-full flex items-center justify-center transition-all duration-700 ease-in-out overflow-hidden ${scrollState === 'top' ? 'max-h-[120px] opacity-100 mb-16' : 'max-h-0 opacity-0 pointer-events-none mb-0'}`}>
             <button 
               onClick={() => window.history.back()}
               className="absolute left-0 w-12 h-12 flex items-center justify-center rounded-full border border-gray-100 text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all shadow-sm"
@@ -376,7 +378,7 @@ export default function WholesalerGalleryClient({ products, categoryTabs, initia
             </button>
           </div>
 
-          <div className="flex flex-col gap-10">
+          <div data-employee-browse-controls className="flex flex-col gap-10">
             {/* Curated Collection Header - Hidden when scrolling down/up */}
             <div className={`transition-all duration-700 ease-in-out overflow-hidden ${scrollState === 'top' ? 'max-h-[100px] opacity-100 mb-0' : 'max-h-0 opacity-0 pointer-events-none mb-0'}`}>
               <h2 className="text-[24px] md:text-[28px] font-serif text-[#111827] leading-tight mb-2">
@@ -388,7 +390,7 @@ export default function WholesalerGalleryClient({ products, categoryTabs, initia
             </div>
 
             {/* Categories & Filters */}
-            <div className={`flex flex-col transition-all duration-700 ease-in-out ${scrollState === 'top' ? 'gap-12' : 'gap-0'}`}>
+            <div data-employee-browse-filters data-expanded={scrollState === 'top'} className={`flex flex-col transition-all duration-700 ease-in-out ${scrollState === 'top' ? 'gap-12' : 'gap-0'}`}>
               
               {/* Category Row - Optimized for Tablet/Mobile fit */}
               <div className={`flex items-center justify-center transition-all duration-700 ease-in-out overflow-hidden ${scrollState === 'top' ? 'max-h-[400px] opacity-100 mb-0' : 'max-h-0 opacity-0 pointer-events-none mb-0'}`}>
@@ -400,6 +402,8 @@ export default function WholesalerGalleryClient({ products, categoryTabs, initia
                     return (
                       <div 
                         key={tab} 
+                        data-employee-category
+                        data-active={isActive}
                         className="flex flex-col items-center gap-2 cursor-pointer group shrink-0 transition-transform duration-500"
                         onClick={() => handleCategoryChange(key)}
                         style={{ transform: isActive ? 'scale(1.1)' : 'scale(1)' }}
@@ -467,7 +471,7 @@ export default function WholesalerGalleryClient({ products, categoryTabs, initia
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-24">
+            <div data-employee-grid className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-24">
               {currentProducts.map((product) => (
                 <ProductCard
                   key={product.id}

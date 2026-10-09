@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {validShareSettings,remainingSessionMs,safeImageUrl} from '../lib/wishlist/contract.mjs';
+import {validShareSettings,remainingSessionMs,safeImageUrl,wishlistResponse} from '../lib/wishlist/contract.mjs';
 import {filterWishlistTelemetry} from '../lib/wishlist/telemetry.mjs';
 test('sharing limits reject fractional values and out-of-range settings',()=> {
  const base={board_id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',max_viewers:1,duration_minutes:5};
@@ -20,4 +20,10 @@ test('unsafe media URLs cannot enter the shared grid',()=> {
 test('wishlist capabilities and API bodies cannot enter telemetry',()=> {
  for(const value of [{request:{url:'https://app.jewelindia.shop/share/wishlist#secret'}},{request:{url:'https://app.jewelindia.shop/api/shared-wishlist/claim',data:{token:'secret'}}},{data:{url:'/api/wishlist-shares'}},{message:'GET /api/wishlists failed'}]) assert.equal(filterWishlistTelemetry(value),null);
  const regular={request:{url:'/dashboard/wholesaler'}};assert.equal(filterWishlistTelemetry(regular),regular);
+});
+
+test('gateway failures show usable messages without raw HTML or parser errors',async()=> {
+ await assert.rejects(wishlistResponse(new Response('<html>Not Found</html>', {status:404})), /temporarily unavailable/);
+ await assert.rejects(wishlistResponse(Response.json({message:'This wishlist link has expired.'},{status:410})), /has expired/);
+ assert.deepEqual(await wishlistResponse(Response.json({ok:true})),{ok:true});
 });
