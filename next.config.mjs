@@ -46,8 +46,8 @@ const nextConfig = {
       },
     ],
   },
-  serverActions: {
-    allowedOrigins: ['app.jewelindia.shop', '*.jewelindia.shop', 'localhost:3000'],
+  experimental: {
+    serverActions: { allowedOrigins: ['app.jewelindia.shop', '*.jewelindia.shop', 'localhost:3000'] },
   },
   async headers() {
     return [

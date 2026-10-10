@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import CreditAllowanceStatus from "./CreditAllowanceStatus";
 import { useCredits } from "../../context/CreditsContext";
 import { fetchLedger } from "../../lib/supabase/credits-queries";
 
@@ -31,8 +32,9 @@ function humanTitle(kind, featureKey, metadata, referenceType) {
 }
 
 export default function CreditWalletPage({ dashboard = "/dashboard/wholesaler" }) {
-  const { wallet, rateCardList, isLoading: walletLoading, error: walletError, refresh } = useCredits();
+  const { wallet: freshWallet, lastKnownWallet, isStale, rateCardList, isLoading: walletLoading, error: walletError, refresh } = useCredits();
 
+  const wallet = freshWallet ?? lastKnownWallet;
   const [ledger, setLedger] = useState([]);
   const [ledgerCount, setLedgerCount] = useState(0);
   const [isLedgerLoading, setIsLedgerLoading] = useState(true);
@@ -59,7 +61,8 @@ export default function CreditWalletPage({ dashboard = "/dashboard/wholesaler" }
   }, [activeFilter, page]);
 
   useEffect(() => {
-    loadLedger();
+    const timer = setTimeout(() => void loadLedger(), 0);
+    return () => clearTimeout(timer);
   }, [loadLedger]);
 
   const available = wallet?.available;
@@ -74,7 +77,6 @@ export default function CreditWalletPage({ dashboard = "/dashboard/wholesaler" }
 
   return (
     <div className="min-h-screen bg-[#FEFEFE] pb-20">
-      {wallet?.mode === "daily" && <p className="text-center text-sm p-3">Daily: {wallet.daily_available ?? wallet.available} · Bonus: {wallet.bonus_available ?? 0} · Bonuses stay until spent.</p>}
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-celestique-taupe px-4 md:px-10 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -123,7 +125,7 @@ export default function CreditWalletPage({ dashboard = "/dashboard/wholesaler" }
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-widest text-[#997A15]">
-                  Available today
+                  {isStale ? "Last known balance" : "Available credits"}
                 </span>
                 {isLowBalance && (
                   <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
@@ -142,10 +144,7 @@ export default function CreditWalletPage({ dashboard = "/dashboard/wholesaler" }
               </div>
 
               {walletError && <p role="alert" className="text-sm text-red-700">{walletError}</p>}
-              {wallet?.mode === "daily" && <p className="text-sm text-celestique-muted mt-3">
-                Your business receives 2,000 daily credits, refreshed at midnight India time. Daily credits expire; gift and referral bonuses stay until spent.
-                {wallet.shared_business_wallet && " Staff use the same business balance."}
-              </p>}
+              <CreditAllowanceStatus wallet={wallet} isStale={isStale} />
               {(wallet?.legacy_preserved ?? 0) > 0 && <p className="text-xs text-celestique-muted">Previous credit records are preserved separately.</p>}
               {wallet?.mode !== "daily" && expiringSoon > 0 && (
                 <div className="flex items-center gap-2 text-xs text-[#B45309] font-medium bg-[#FFFBEB] border border-[#FDE68A] px-3 py-1.5 rounded-xl self-start mt-2">
