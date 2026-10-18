@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "../../../../lib/supabase/admin";
 import { getRequestUser } from "../../../../lib/supabase/request-user.js";
+import { assertFeature } from "../../../../lib/featureFlags.js";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
@@ -61,6 +62,20 @@ export async function POST(request) {
 
     if (productsError || !products || products.length !== productIds.length) {
       return NextResponse.json({ error: "One or more products are unavailable" }, { status: 409 });
+    }
+
+    // Verify each supplier in the order has 'orders' feature enabled
+    const uniqueWholesalerIds = [...new Set(products.map((p) => p.wholesaler_id).filter(Boolean))];
+    for (const wid of uniqueWholesalerIds) {
+      const blockedResponse = await assertFeature(
+        supabaseAdmin,
+        wid,
+        "orders",
+        "This supplier is not accepting orders right now."
+      );
+      if (blockedResponse) {
+        return blockedResponse;
+      }
     }
 
     const productMap = new Map(products.map((product) => [product.id, product]));
