@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "../../../../lib/supabase/server";
 import { supabaseAdmin } from "../../../../lib/supabase/admin";
+import { assertFeature } from "../../../../lib/featureFlags.js";
 
 export async function GET(request) {
   try {
@@ -92,6 +93,16 @@ export async function POST(request) {
     if (prodError || !product) {
       console.error("[POST /api/chat/conversations] Product not found. Error:", prodError, product_id);
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    const blockedResponse = await assertFeature(
+      supabaseAdmin,
+      product.wholesaler_id,
+      "messages",
+      "Messaging is not available for this supplier right now."
+    );
+    if (blockedResponse) {
+      return blockedResponse;
     }
 
     // Find the valid wholesaler profile for this product's owner

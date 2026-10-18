@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "../../../../lib/supabase/server";
 import { supabaseAdmin } from "../../../../lib/supabase/admin";
+import { assertFeature } from "../../../../lib/featureFlags.js";
 
 export async function GET(request) {
   try {
@@ -26,6 +27,16 @@ export async function GET(request) {
 
     if (convErr || !conv) {
       return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
+    }
+
+    const blockedResponse = await assertFeature(
+      supabaseAdmin,
+      conv.wholesaler_id,
+      "messages",
+      "Messaging is not available for this supplier right now."
+    );
+    if (blockedResponse) {
+      return blockedResponse;
     }
 
     const role = user.user_metadata?.role;
@@ -86,6 +97,16 @@ export async function POST(request) {
 
     if (convErr || !conv) {
       return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
+    }
+
+    const blockedResponse = await assertFeature(
+      supabaseAdmin,
+      conv.wholesaler_id,
+      "messages",
+      "Messaging is not available for this supplier right now."
+    );
+    if (blockedResponse) {
+      return blockedResponse;
     }
 
     const role = user.user_metadata?.role;
