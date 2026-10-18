@@ -14,10 +14,11 @@ const block = event => event.preventDefault();
 // the store's own wishlist screens keep their card look.
 const LOOK = {
   editorial: {
-    list: "grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4",
+    // Gutters keep neighbouring dark studio photos from merging into one block.
+    list: "grid grid-cols-2 gap-x-2 gap-y-5 px-2.5 pt-2.5 sm:gap-x-3 sm:gap-y-7 sm:px-6 sm:pt-4 pb-10 md:grid-cols-3 lg:gap-x-4 xl:grid-cols-4",
     tile: "group h-full bg-white",
     image: "bg-[#F7F7F7]",
-    info: "px-2.5 pb-4 pt-1.5",
+    info: "pt-2",
     title: "line-clamp-2 font-switzer text-xs uppercase leading-5 tracking-[0.3px] text-black",
     meta: "font-switzer text-xs leading-5 text-[#6B6B6B]",
   },
