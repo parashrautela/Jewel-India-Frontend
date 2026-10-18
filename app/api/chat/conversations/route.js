@@ -95,11 +95,16 @@ export async function POST(request) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    const isWholesalerCaller = authCheck.role === "wholesaler" || authCheck.user?.user_metadata?.role === "wholesaler";
+    const blockedMsg = isWholesalerCaller
+      ? "Messaging has been locked for your account by Jewel India admin. Contact support to unlock it."
+      : "Messaging is not available for this supplier right now.";
+
     const blockedResponse = await assertFeature(
       supabaseAdmin,
       product.wholesaler_id,
       "messages",
-      "Messaging is not available for this supplier right now."
+      blockedMsg
     );
     if (blockedResponse) {
       return blockedResponse;

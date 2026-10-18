@@ -64,3 +64,87 @@ test('chat check: active supplier passes with null response', async () => {
 
   assert.equal(res, null);
 });
+
+test('R4: sending message as wholesaler with messages blocked returns wholesaler-specific error', async () => {
+  const wholesalerId = '00000000-0000-0000-0000-000000000004';
+  const mockAdmin = {
+    rpc: async (name, args) => {
+      assert.equal(name, 'feature_blocked');
+      assert.equal(args.p_user, wholesalerId);
+      assert.equal(args.p_key, 'messages');
+      return { data: true, error: null };
+    },
+  };
+
+  const senderType = 'wholesaler';
+  const blockedMsg =
+    senderType === 'wholesaler'
+      ? 'Messaging has been locked for your account by Jewel India admin. Contact support to unlock it.'
+      : 'Messaging is not available for this supplier right now.';
+
+  const response = await assertFeature(
+    mockAdmin,
+    wholesalerId,
+    'messages',
+    blockedMsg
+  );
+
+  assert.ok(response);
+  assert.equal(response.status, 403);
+  const json = await response.json();
+  assert.equal(json.error, 'Messaging has been locked for your account by Jewel India admin. Contact support to unlock it.');
+  assert.equal(json.code, 'FEATURE_DISABLED');
+  assert.equal(json.feature, 'messages');
+});
+
+test('R4: sending message as retailer/employee with messages blocked returns retailer sentence', async () => {
+  const wholesalerId = '00000000-0000-0000-0000-000000000005';
+  const mockAdmin = {
+    rpc: async () => ({ data: true, error: null }),
+  };
+
+  const senderType = 'employee';
+  const blockedMsg =
+    senderType === 'wholesaler'
+      ? 'Messaging has been locked for your account by Jewel India admin. Contact support to unlock it.'
+      : 'Messaging is not available for this supplier right now.';
+
+  const response = await assertFeature(
+    mockAdmin,
+    wholesalerId,
+    'messages',
+    blockedMsg
+  );
+
+  assert.ok(response);
+  assert.equal(response.status, 403);
+  const json = await response.json();
+  assert.equal(json.error, 'Messaging is not available for this supplier right now.');
+  assert.equal(json.code, 'FEATURE_DISABLED');
+  assert.equal(json.feature, 'messages');
+});
+
+test('R4: creating conversation as wholesaler caller uses wholesaler-specific error', async () => {
+  const wholesalerId = '00000000-0000-0000-0000-000000000006';
+  const mockAdmin = {
+    rpc: async () => ({ data: true, error: null }),
+  };
+
+  const isWholesalerCaller = true;
+  const blockedMsg = isWholesalerCaller
+    ? 'Messaging has been locked for your account by Jewel India admin. Contact support to unlock it.'
+    : 'Messaging is not available for this supplier right now.';
+
+  const response = await assertFeature(
+    mockAdmin,
+    wholesalerId,
+    'messages',
+    blockedMsg
+  );
+
+  assert.ok(response);
+  assert.equal(response.status, 403);
+  const json = await response.json();
+  assert.equal(json.error, 'Messaging has been locked for your account by Jewel India admin. Contact support to unlock it.');
+});
+

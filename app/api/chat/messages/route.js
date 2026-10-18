@@ -112,11 +112,16 @@ export async function POST(request) {
     }
 
     // Feature check placed AFTER access check so unauthorized callers learn nothing
+    const blockedMsg =
+      senderType === "wholesaler"
+        ? "Messaging has been locked for your account by Jewel India admin. Contact support to unlock it."
+        : "Messaging is not available for this supplier right now.";
+
     const blockedResponse = await assertFeature(
       supabaseAdmin,
       conv.wholesaler_id,
       "messages",
-      "Messaging is not available for this supplier right now."
+      blockedMsg
     );
     if (blockedResponse) {
       return blockedResponse;
