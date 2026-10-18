@@ -126,37 +126,44 @@ export default function DesignViewer({ products, index, onIndexChange, onClose }
   const src = fullImage(product);
   const title = product.title || product.jewellery_type || "Jewellery design";
 
+  // Styled after a fashion product page (DESIGN-SPEC.md §5): white, photo on light grey, small uppercase type.
+  const chevron = "absolute top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center text-3xl font-light text-black/70 hover:text-black md:flex";
   return <div role="dialog" aria-modal="true" aria-label={`${title}, design ${index + 1} of ${count}`}
-    className="fixed inset-0 z-50 flex flex-col bg-black text-white">
-    <div className="flex items-center justify-between gap-3 px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold sm:text-base">{title}</p>
-        {count > 1 && <p className="text-xs text-white/60">{index + 1} / {count}</p>}
-      </div>
-      <button ref={closeButton} type="button" onClick={onClose} aria-label="Close"
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-2xl leading-none hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-white">×</button>
+    className="fixed inset-0 z-50 flex flex-col bg-white font-switzer text-black">
+    <div className="flex items-center justify-between border-b border-[#F2F2F2] px-2.5 pb-2 pt-[max(0.625rem,env(safe-area-inset-top))] sm:px-6">
+      <span className="font-mono text-[10px] uppercase tracking-[0.12em]">Jewel India</span>
+      <button ref={closeButton} type="button" onClick={onClose}
+        className="-mr-2 px-2 py-2 font-mono text-[10px] uppercase tracking-[0.12em] underline-offset-4 outline-none hover:opacity-60 focus-visible:underline">Close</button>
     </div>
 
     <div ref={stage} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}
       onWheel={onWheel} onContextMenu={block}
-      className="relative flex min-h-0 flex-1 touch-none select-none items-center justify-center overflow-hidden">
-      {!loaded && src && <div aria-hidden className="absolute h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />}
+      className="relative flex min-h-0 flex-1 touch-none select-none items-center justify-center overflow-hidden bg-[#F7F7F7]">
+      {!loaded && src && <div aria-hidden className="absolute h-8 w-8 animate-spin rounded-full border border-black/10 border-t-black/60" />}
       {src ?
         // eslint-disable-next-line @next/next/no-img-element
         <img key={src} src={src} alt={title} referrerPolicy="no-referrer" draggable={false} onLoad={() => setLoaded(true)}
           style={{ transform: `translate(${zoom.x}px, ${zoom.y}px) scale(${zoom.scale})` }}
           className={`max-h-full max-w-full object-contain duration-300 ${loaded ? "opacity-100" : "opacity-0"} ${dragging ? "transition-opacity" : "transition-[opacity,transform]"}`} /> :
-        <p className="text-sm text-white/70">Image unavailable</p>}
+        <p className="text-xs uppercase tracking-[0.3px] text-[#6B6B6B]">Image unavailable</p>}
       {count > 1 && <>
-        <button type="button" onClick={() => go(-1)} aria-label="Previous design"
-          className="absolute left-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl hover:bg-white/20 md:flex">‹</button>
-        <button type="button" onClick={() => go(1)} aria-label="Next design"
-          className="absolute right-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl hover:bg-white/20 md:flex">›</button>
+        <button type="button" onClick={() => go(-1)} aria-label="Previous design" className={`${chevron} left-2`}>‹</button>
+        <button type="button" onClick={() => go(1)} aria-label="Next design" className={`${chevron} right-2`}>›</button>
       </>}
+      {count > 1 && count <= 20 && <div aria-hidden className="absolute bottom-3 left-2.5 flex gap-1 sm:left-6">
+        {products.map((p, i) => <span key={p.id} className={`h-px w-3 ${i === index ? "bg-black" : "bg-black/20"}`} />)}
+      </div>}
     </div>
 
-    <p className="px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 text-center text-xs text-white/50">
-      {zoom.scale > 1 ? "Drag to look around · double-tap to reset" : count > 1 ? "Swipe for more · pinch or double-tap to zoom" : "Pinch or double-tap to zoom"}
-    </p>
+    <div className="px-2.5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2.5 sm:px-6">
+      <div className="flex items-start justify-between gap-4">
+        <p className="min-w-0 text-xs uppercase leading-5 tracking-[0.3px]">{title}</p>
+        {count > 1 && <p className="shrink-0 font-mono text-[10px] leading-5 tracking-[0.12em] tabular-nums">{index + 1} / {count}</p>}
+      </div>
+      {product.net_weight != null && <p className="text-xs leading-5 text-[#6B6B6B]">{product.net_weight}g</p>}
+      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#6B6B6B]">
+        {zoom.scale > 1 ? "Drag to look around · double-tap to reset" : count > 1 ? "Swipe for more · pinch or double-tap to zoom" : "Pinch or double-tap to zoom"}
+      </p>
+    </div>
   </div>;
 }

@@ -90,20 +90,24 @@ export default function SharedWishlist({ kind = "wishlist" }) {
     finally { setBusy(false); }
   }
 
-  return <main className="sentry-block min-h-screen bg-[#FAF8F4] px-4 py-6 text-stone-900 sm:py-8 md:px-8 md:py-12">
-    <div className="mx-auto max-w-6xl">
-      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-800">Jewel India</p>
-      {view ? <>
-        <SharedDesigns view={view} seconds={seconds} sender={copy.sender} />
-      </> : <div className="mx-auto mt-16 max-w-md rounded-3xl border border-stone-200 bg-white p-8 text-center shadow-sm">
-        <h1 className="text-3xl font-semibold">{copy.heading}</h1>
-        <p className="mt-4 text-sm leading-relaxed text-stone-500">{copy.intro}</p>
-        {token && <><p className="mt-4 text-sm text-stone-600">Opening uses one viewing slot. Your session lasts up to 30 minutes, or until the link expires.</p><button disabled={!ready || busy} onClick={claim} className="mt-6 w-full rounded-xl bg-stone-900 p-3 font-semibold text-white disabled:opacity-50">{busy ? "Opening…" : copy.open}</button></>}
-        {notice && <p role="alert" className="mt-5 text-sm text-stone-600">{notice}</p>}
-        {session.current && <button disabled={busy} onClick={loadContent} className="mt-4 text-sm underline">Check access again</button>}
-        {!ready && !notice && <p role="status" className="mt-5 text-sm text-stone-500">Preparing link…</p>}
-      </div>}
-      <p className="mt-8 text-center text-xs text-stone-500">A viewing link from Jewel India · Read-only access</p>
+  // Layout and type follow plans/catalogue-sharing/evidence/web/DESIGN-SPEC.md.
+  return <main className="sentry-block flex min-h-screen flex-col bg-white font-switzer text-black antialiased">
+    <div className="mx-auto w-full max-w-[1600px] flex-1">
+      <p className="px-2.5 pt-5 font-mono text-[10px] uppercase tracking-[0.12em] sm:px-6 sm:pt-7">Jewel India</p>
+      {view ? <SharedDesigns view={view} seconds={seconds} sender={copy.sender} /> :
+        <section className="px-2.5 pb-16 pt-14 sm:px-6 sm:pt-24">
+          <h1 className="max-w-3xl text-[40px] leading-[0.9] tracking-[-0.02em] sm:text-[56px] lg:text-[72px]">{copy.heading}</h1>
+          <p className="mt-6 max-w-md font-mono text-[11px] uppercase leading-5 tracking-[0.06em] text-[#6B6B6B]">{copy.intro}</p>
+          {token && <>
+            <p className="mt-3 max-w-md font-mono text-[11px] uppercase leading-5 tracking-[0.06em] text-[#6B6B6B]">Opening uses one viewing slot. Your session lasts up to 30 minutes, or until the link expires.</p>
+            <button disabled={!ready || busy} onClick={claim}
+              className="mt-10 w-full max-w-md bg-black px-6 py-4 text-xs uppercase tracking-[0.3px] text-white transition-opacity hover:opacity-85 disabled:opacity-40">{busy ? "Opening…" : copy.open}</button>
+          </>}
+          {notice && <p role="alert" className="mt-8 max-w-md border-t border-[#F2F2F2] pt-4 text-xs uppercase leading-5 tracking-[0.3px]">{notice}</p>}
+          {session.current && <button disabled={busy} onClick={loadContent} className="mt-4 text-xs uppercase tracking-[0.3px] underline underline-offset-4">Check access again</button>}
+          {!ready && !notice && <p role="status" className="mt-8 font-mono text-[11px] uppercase tracking-[0.06em] text-[#6B6B6B]">Preparing link…</p>}
+        </section>}
     </div>
+    <p className="border-t border-[#F2F2F2] px-2.5 py-5 text-center font-mono text-[10px] uppercase tracking-[0.12em] text-[#6B6B6B]">A viewing link from Jewel India · Read-only</p>
   </main>;
 }
