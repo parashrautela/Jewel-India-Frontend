@@ -61,7 +61,7 @@ export async function PATCH(request, context) {
         supabaseAdmin,
         user.id,
         "publish_to_retailer",
-        "Publishing to retailers is not available for this supplier right now."
+        "Publishing has been locked for your account by Jewel India admin. Contact support to unlock it."
       );
       if (blocked) return blocked;
     }

@@ -29,16 +29,6 @@ export async function GET(request) {
       return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
     }
 
-    const blockedResponse = await assertFeature(
-      supabaseAdmin,
-      conv.wholesaler_id,
-      "messages",
-      "Messaging is not available for this supplier right now."
-    );
-    if (blockedResponse) {
-      return blockedResponse;
-    }
-
     const role = user.user_metadata?.role;
     let hasAccess = false;
 
@@ -99,16 +89,6 @@ export async function POST(request) {
       return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
     }
 
-    const blockedResponse = await assertFeature(
-      supabaseAdmin,
-      conv.wholesaler_id,
-      "messages",
-      "Messaging is not available for this supplier right now."
-    );
-    if (blockedResponse) {
-      return blockedResponse;
-    }
-
     const role = user.user_metadata?.role;
     let hasAccess = false;
     let senderType = "";
@@ -129,6 +109,17 @@ export async function POST(request) {
 
     if (!hasAccess || !senderType) {
       return NextResponse.json({ error: "Forbidden to send message in this conversation" }, { status: 403 });
+    }
+
+    // Feature check placed AFTER access check so unauthorized callers learn nothing
+    const blockedResponse = await assertFeature(
+      supabaseAdmin,
+      conv.wholesaler_id,
+      "messages",
+      "Messaging is not available for this supplier right now."
+    );
+    if (blockedResponse) {
+      return blockedResponse;
     }
 
     const { data: newMessage, error: insertError } = await supabaseAdmin
