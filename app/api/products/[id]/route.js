@@ -1,3 +1,5 @@
+import { supabaseAdmin } from "../../../../lib/supabase/admin";
+import { assertFeature } from "../../../../lib/featureFlags.js";
 import { NextResponse } from "next/server";
 import { createClient } from "../../../../lib/supabase/server";
 
@@ -52,6 +54,16 @@ export async function PATCH(request, context) {
         }
       }
       updatePayload.is_published = body.is_published;
+    }
+
+    if (updatePayload.is_published === true) {
+      const blocked = await assertFeature(
+        supabaseAdmin,
+        user.id,
+        "publish_to_retailer",
+        "Publishing to retailers is not available for this supplier right now."
+      );
+      if (blocked) return blocked;
     }
 
     if (Object.keys(updatePayload).length === 0) {
