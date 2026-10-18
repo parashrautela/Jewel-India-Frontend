@@ -4,7 +4,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import ProductTiles from "./ProductTiles";
 import { TOKEN, UUID, remainingSessionMs, wishlistResponse } from "../../lib/wishlist/contract.mjs";
 
-export default function SharedWishlist() {
+// Copy per link kind. Catalogue links are a wholesaler's hand-picked designs.
+const COPY = {
+  wishlist: { path: "/share/wishlist", heading: "A wishlist for you", intro: "Explore designs selected by your jewellery store. No sign-in needed.",
+    open: "Open wishlist", unavailable: "This link is unavailable. Ask the store for a new wishlist link.",
+    failed: "Couldn't open this wishlist. Please try again.", sender: "your jewellery store", ended: "Your viewing session has ended. Ask the store for a new link." },
+  catalogue: { path: "/share/catalogue", heading: "Designs for you", intro: "Explore designs selected by your jeweller. No sign-in needed.",
+    open: "View designs", unavailable: "This link is unavailable. Ask your jeweller for a new link.",
+    failed: "Couldn't open these designs. Please try again.", sender: "your jeweller", ended: "Your viewing session has ended. Ask your jeweller for a new link." },
+};
+
+export default function SharedWishlist({ kind = "wishlist" }) {
+  const copy = COPY[kind] ?? COPY.wishlist;
   const [token, setToken] = useState("");
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -37,7 +48,7 @@ export default function SharedWishlist() {
       if (cancelled) return;
       setToken(TOKEN.test(rawToken) ? rawToken : ""); setReady(true);
       if (session.current) await loadContent();
-      else if (!TOKEN.test(rawToken)) setNotice("This link is unavailable. Ask the store for a new wishlist link.");
+      else if (!TOKEN.test(rawToken)) setNotice(copy.unavailable);
     }).catch(err => { if (!cancelled) setNotice(err.message); });
 
     const onVisibility = () => {
@@ -51,19 +62,19 @@ export default function SharedWishlist() {
     window.addEventListener("pageshow", onPageShow);
     const poll = setInterval(loadContent, 10000);
     return () => { cancelled = true; generation.current += 1; clearInterval(poll); document.removeEventListener("visibilitychange", onVisibility); window.removeEventListener("pagehide", onPageHide); window.removeEventListener("pageshow", onPageShow); };
-  }, [loadContent]);
+  }, [loadContent, copy]);
 
   useEffect(() => {
     if (!view) return;
     const tick = () => {
       const remaining = remainingSessionMs(view.expires_at, view.server_now, view.receivedAt);
       setSeconds(Math.ceil(remaining / 1000));
-      if (remaining <= 0) { generation.current += 1; setView(null); setNotice("Your viewing session has ended. Ask the store for a new link."); }
+      if (remaining <= 0) { generation.current += 1; setView(null); setNotice(copy.ended); }
     };
     const initial = setTimeout(tick, 0);
     const timer = setInterval(tick, 1000);
     return () => { clearTimeout(initial); clearInterval(timer); };
-  }, [view]);
+  }, [view, copy]);
 
   async function claim() {
     if (busy || !ready || !token) return;
@@ -71,11 +82,11 @@ export default function SharedWishlist() {
     try {
       const res = await fetch("/api/shared-wishlist/claim", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) });
       const data = await wishlistResponse(res);
-      if (!UUID.test(data.share_id ?? "")) throw new Error("Couldn't open this wishlist. Please try again.");
+      if (!UUID.test(data.share_id ?? "")) throw new Error(copy.failed);
       session.current = data.share_id;
-      window.history.replaceState(null, "", `/share/wishlist?session=${data.share_id}`);
+      window.history.replaceState(null, "", `${copy.path}?session=${data.share_id}`);
       setToken(""); await loadContent();
-    } catch (err) { setNotice(err.message || "Couldn't open this wishlist. Please try again."); }
+    } catch (err) { setNotice(err.message || copy.failed); }
     finally { setBusy(false); }
   }
 
@@ -83,12 +94,12 @@ export default function SharedWishlist() {
     <div className="mx-auto max-w-5xl">
       <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-800">Jewel India</p>
       {view ? <>
-        <div className="mb-8 mt-5 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm text-stone-500">Shared by {view.store_name || "your jewellery store"}</p><h1 className="mt-2 text-3xl font-semibold">{view.title}</h1></div><p role="timer" className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm text-stone-600">Session ends in {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}</p></div>
+        <div className="mb-8 mt-5 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm text-stone-500">Shared by {view.store_name || copy.sender}</p><h1 className="mt-2 text-3xl font-semibold">{view.title}</h1></div><p role="timer" className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm text-stone-600">Session ends in {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}</p></div>
         <ProductTiles products={view.products} />
       </> : <div className="mx-auto mt-16 max-w-md rounded-3xl border border-stone-200 bg-white p-8 text-center shadow-sm">
-        <h1 className="text-3xl font-semibold">A wishlist for you</h1>
-        <p className="mt-4 text-sm leading-relaxed text-stone-500">Explore designs selected by your jewellery store. No sign-in needed.</p>
-        {token && <><p className="mt-4 text-sm text-stone-600">Opening uses one viewing slot. Your session lasts up to 30 minutes, or until the link expires.</p><button disabled={!ready || busy} onClick={claim} className="mt-6 w-full rounded-xl bg-stone-900 p-3 font-semibold text-white disabled:opacity-50">{busy ? "Opening…" : "Open wishlist"}</button></>}
+        <h1 className="text-3xl font-semibold">{copy.heading}</h1>
+        <p className="mt-4 text-sm leading-relaxed text-stone-500">{copy.intro}</p>
+        {token && <><p className="mt-4 text-sm text-stone-600">Opening uses one viewing slot. Your session lasts up to 30 minutes, or until the link expires.</p><button disabled={!ready || busy} onClick={claim} className="mt-6 w-full rounded-xl bg-stone-900 p-3 font-semibold text-white disabled:opacity-50">{busy ? "Opening…" : copy.open}</button></>}
         {notice && <p role="alert" className="mt-5 text-sm text-stone-600">{notice}</p>}
         {session.current && <button disabled={busy} onClick={loadContent} className="mt-4 text-sm underline">Check access again</button>}
         {!ready && !notice && <p role="status" className="mt-5 text-sm text-stone-500">Preparing link…</p>}
