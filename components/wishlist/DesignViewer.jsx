@@ -128,7 +128,7 @@ export default function DesignViewer({ products, index, onIndexChange, onClose }
 
   // Styled after a fashion product page (DESIGN-SPEC.md §5): white, photo on light grey, small uppercase type.
   const chevron = "absolute top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center text-3xl font-light text-black/70 hover:text-black md:flex";
-  return <div role="dialog" aria-modal="true" aria-label={`${title}, design ${index + 1} of ${count}`}
+  return <div role="dialog" aria-modal="true" aria-label={`${title}, photo ${index + 1} of ${count}`}
     className="fixed inset-0 z-50 flex flex-col bg-white font-switzer text-black">
     <div className="flex items-center justify-between border-b border-[#F2F2F2] px-2.5 pb-2 pt-[max(0.625rem,env(safe-area-inset-top))] sm:px-6">
       <span className="font-mono text-[10px] uppercase tracking-[0.12em]">Jewel India</span>
@@ -147,8 +147,8 @@ export default function DesignViewer({ products, index, onIndexChange, onClose }
           className={`max-h-full max-w-full object-contain duration-300 ${loaded ? "opacity-100" : "opacity-0"} ${dragging ? "transition-opacity" : "transition-[opacity,transform]"}`} /> :
         <p className="text-xs uppercase tracking-[0.3px] text-[#6B6B6B]">Image unavailable</p>}
       {count > 1 && <>
-        <button type="button" onClick={() => go(-1)} aria-label="Previous design" className={`${chevron} left-2`}>‹</button>
-        <button type="button" onClick={() => go(1)} aria-label="Next design" className={`${chevron} right-2`}>›</button>
+        <button type="button" onClick={() => go(-1)} aria-label="Previous photo" className={`${chevron} left-2`}>‹</button>
+        <button type="button" onClick={() => go(1)} aria-label="Next photo" className={`${chevron} right-2`}>›</button>
       </>}
       {count > 1 && count <= 20 && <div aria-hidden className="absolute bottom-3 left-2.5 flex gap-1 sm:left-6">
         {products.map((p, i) => <span key={p.id} className={`h-px w-3 ${i === index ? "bg-black" : "bg-black/20"}`} />)}
