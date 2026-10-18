@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import ProductTiles from "./ProductTiles";
+import SharedDesigns from "./SharedDesigns";
 import { TOKEN, UUID, remainingSessionMs, wishlistResponse } from "../../lib/wishlist/contract.mjs";
 
 // Copy per link kind. Catalogue links are a wholesaler's hand-picked designs.
@@ -90,12 +90,11 @@ export default function SharedWishlist({ kind = "wishlist" }) {
     finally { setBusy(false); }
   }
 
-  return <main className="sentry-block min-h-screen bg-[#FAF8F4] px-4 py-8 text-stone-900 md:px-8 md:py-12">
-    <div className="mx-auto max-w-5xl">
+  return <main className="sentry-block min-h-screen bg-[#FAF8F4] px-4 py-6 text-stone-900 sm:py-8 md:px-8 md:py-12">
+    <div className="mx-auto max-w-6xl">
       <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-800">Jewel India</p>
       {view ? <>
-        <div className="mb-8 mt-5 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm text-stone-500">Shared by {view.store_name || copy.sender}</p><h1 className="mt-2 text-3xl font-semibold">{view.title}</h1></div><p role="timer" className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm text-stone-600">Session ends in {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}</p></div>
-        <ProductTiles products={view.products} />
+        <SharedDesigns view={view} seconds={seconds} sender={copy.sender} />
       </> : <div className="mx-auto mt-16 max-w-md rounded-3xl border border-stone-200 bg-white p-8 text-center shadow-sm">
         <h1 className="text-3xl font-semibold">{copy.heading}</h1>
         <p className="mt-4 text-sm leading-relaxed text-stone-500">{copy.intro}</p>
