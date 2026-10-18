@@ -12,7 +12,8 @@ const withPWA = withPWAInit({
   workboxOptions: {
     disableDevLogs: true,
     runtimeCaching: [{
-      urlPattern: ({ url }) => url.pathname.startsWith("/share/") || url.pathname.startsWith("/api/shared-wishlist") || url.pathname.startsWith("/api/wishlist-shares"),
+      urlPattern: ({ url }) => url.pathname.startsWith("/share/") || url.pathname.startsWith("/api/shared-wishlist") ||
+        url.pathname.startsWith("/api/wishlist-shares") || url.pathname.startsWith("/api/catalogue-shares"),
       handler: "NetworkOnly",
     }],
   },
