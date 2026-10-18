@@ -1,10 +1,13 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import { remainingMilliseconds, retryDelay } from "../lib/credits/schedule.mjs";
 import { fetchWallet, fetchRateCard } from "../lib/supabase/credits-queries";
 
 const defaultCreditsState = {
   wallet: null,
+  lastKnownWallet: null,
+  isStale: false,
   rateCard: {},
   rateCardList: [],
   isLoading: false,
@@ -23,13 +26,14 @@ export function CreditsProvider({ children }) {
   const [rateCardList, setRateCardList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [failures, setFailures] = useState(0);
 
   const refresh = useCallback(async () => {
     if (refreshing.current) return;
     refreshing.current = true;
     try {
       setIsLoading(true);
-      setError(null);
+
 
       const [walletData, pricesData] = await Promise.all([
         fetchWallet(),
@@ -41,6 +45,8 @@ export function CreditsProvider({ children }) {
 
       if (walletData && typeof walletData === "object") {
         setWallet(walletData);
+        setError(null);
+        setFailures(0);
       }
 
       if (Array.isArray(pricesData)) {
@@ -55,8 +61,11 @@ export function CreditsProvider({ children }) {
       }
     } catch (err) {
       console.warn("[CreditsContext] Refresh notice:", err?.message);
-      setWallet(null);
+      // Retain last known data for the wallet page, but do not expose it as a
+      // fresh spendable wallet to feature screens. Clear it on loss of access.
+      if (["NOT_AUTHENTICATED", "NOT_VERIFIED"].includes(err?.code)) setWallet(null);
       setError(err?.message || "Failed to load credits.");
+      setFailures(count => count + 1);
     } finally {
       refreshing.current = false;
       setIsLoading(false);
@@ -64,19 +73,21 @@ export function CreditsProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    refresh();
+    const initialRefresh = setTimeout(() => void refresh(), 0);
     const onVisible = () => { if (!document.hidden) refresh(); };
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("focus", onVisible);
-    return () => { document.removeEventListener("visibilitychange", onVisible); window.removeEventListener("focus", onVisible); };
+    return () => { clearTimeout(initialRefresh); document.removeEventListener("visibilitychange", onVisible); window.removeEventListener("focus", onVisible); };
   }, [refresh]);
 
   useEffect(() => {
-    if (!wallet?.resets_at || !wallet?.server_now) return;
-    const remaining = Date.parse(wallet.resets_at) - Date.parse(wallet.server_now) - (Date.now() - wallet.received_at_ms);
-    const timer = setTimeout(refresh, Math.max(250, remaining + 100));
+    if (isLoading) return;
+    const remaining = remainingMilliseconds(wallet, performance.now());
+    const delay = error ? retryDelay(failures) : remaining == null ? null : Math.max(1000, remaining + 100);
+    if (delay == null) return;
+    const timer = setTimeout(refresh, delay);
     return () => clearTimeout(timer);
-  }, [wallet, refresh]);
+  }, [wallet, error, failures, isLoading, refresh]);
 
   /**
    * Get the credit cost for a specific feature key.
@@ -101,7 +112,9 @@ export function CreditsProvider({ children }) {
   );
 
   const value = {
-    wallet,
+    wallet: error ? null : wallet,
+    lastKnownWallet: wallet,
+    isStale: Boolean(error && wallet),
     rateCard,
     rateCardList,
     isLoading,
