@@ -33,7 +33,7 @@ export default function DeleteAccountPage() {
         <section className="flex flex-col gap-3">
           <h2 className="text-[17px] font-bold text-[#111]">Can&apos;t open the app?</h2>
           <p className="text-[15px] leading-relaxed">
-            Call us on <a className="underline font-semibold" href="tel:+919897453396">+91 98974 53396</a> from the phone
+            Call us on <a className="underline font-semibold" href="tel:+918296549807">+91 82965 49807</a> from the phone
             number or with the email address on your account, and ask us to delete it. We confirm who you are, delete
             the account, and tell you when it&apos;s done.
           </p>
