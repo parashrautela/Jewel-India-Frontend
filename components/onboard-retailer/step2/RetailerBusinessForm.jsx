@@ -22,7 +22,7 @@ export function RetailerBusinessForm({
       {/* Business / Store Name */}
       <div className="flex flex-row gap-[clamp(8px,1.5vw,24px)] w-full">
         <div className="w-full md:w-[58%] md:flex-none flex flex-col gap-2 min-w-0">
-          <label htmlFor="retailer-businessName" className="text-[13px] font-semibold text-[#374151]">
+          <label htmlFor="retailer-businessName" className="text-[16px] font-semibold text-[#46403b]">
             Store name*
           </label>
           <input
@@ -31,7 +31,7 @@ export function RetailerBusinessForm({
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
             placeholder="Priya Jewellers"
-            className={`w-full bg-[#F5F5F5] rounded-[8px] outline-none px-[clamp(10px,1.5vw,16px)] py-[clamp(8px,1.2vw,14px)] text-[clamp(13px,1.4vw,15px)] text-[#374151] placeholder:text-[#9CA3AF] transition-shadow ${
+            className={`w-full bg-[#fafafa] border border-[#ededed] rounded-[8px] min-h-[56px] placeholder-[#a8a19c] outline-none px-[clamp(10px,1.5vw,16px)] py-[clamp(8px,1.2vw,14px)] text-[clamp(13px,1.4vw,15px)] text-[#374151] placeholder:text-[#9CA3AF] transition-shadow ${
               isNameError
                 ? "border-[1.5px] border-[#EF4444]"
                 : "border-none focus:ring-2 focus:ring-black/10"
@@ -49,7 +49,7 @@ export function RetailerBusinessForm({
       <div className="flex flex-row gap-[clamp(8px,1.5vw,24px)] w-full">
         {/* State */}
         <div className="flex-1 flex flex-col gap-2 min-w-0">
-          <label htmlFor="retailer-state" className="text-[13px] font-semibold text-[#374151]">
+          <label htmlFor="retailer-state" className="text-[16px] font-semibold text-[#46403b]">
             State*
           </label>
           <div className="relative">
@@ -88,7 +88,7 @@ export function RetailerBusinessForm({
 
         {/* City */}
         <div className="flex-1 flex flex-col gap-2 min-w-0">
-          <label htmlFor="retailer-city" className="text-[13px] font-semibold text-[#374151]">
+          <label htmlFor="retailer-city" className="text-[16px] font-semibold text-[#46403b]">
             City*
           </label>
           <input

@@ -72,7 +72,7 @@ export function StepIndicator({ currentStep = 1, totalSteps = 3 }) {
   return (
     <div className="flex flex-col gap-3.5 w-full select-none">
       <div 
-        className={`text-[13px] text-[#9CA3AF] font-semibold uppercase tracking-widest transition-all duration-300 ${
+        className={`text-[13px] text-[#9CA3AF] font-semibold uppercase tracking-widest [.theme-retailer_&]:text-[20px] [.theme-retailer_&]:normal-case [.theme-retailer_&]:tracking-normal [.theme-retailer_&]:text-[#808080] transition-all duration-300 ${
           popStep ? "scale-[1.01] opacity-95 text-[#6B7280]" : "scale-100 opacity-80"
         }`}
         style={{
@@ -82,16 +82,16 @@ export function StepIndicator({ currentStep = 1, totalSteps = 3 }) {
       >
         {currentStep <= totalSteps ? (
           <>
-            <span className="font-extrabold text-[#111827]">Step {currentStep}</span> of {totalSteps}
+            <span className="font-extrabold text-[#111827] [.theme-retailer_&]:font-semibold [.theme-retailer_&]:text-[#808080]">Step <span className="[.theme-retailer_&]:text-black">{currentStep}</span></span> of {totalSteps}
           </>
         ) : (
           <span className="font-extrabold text-[#111827] tracking-wider">Verification Progress</span>
         )}
       </div>
 
-      <div className="relative w-full h-[6px] bg-[#E5E7EB] rounded-full overflow-hidden">
+      <div className="relative w-full h-[6px] bg-[#E5E7EB] rounded-full overflow-hidden [.theme-retailer_&]:h-[10px] [.theme-retailer_&]:bg-[#c3c3c3]">
         <div
-          className={`h-full bg-[#111827] rounded-full progress-bar-transition ${
+          className={`h-full bg-[#111827] [.theme-retailer_&]:bg-black rounded-full progress-bar-transition ${
             isCompleted ? "shadow-[0_0_8px_rgba(17,24,39,0.25)]" : ""
           }`}
           style={{

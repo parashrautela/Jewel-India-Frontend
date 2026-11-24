@@ -7,7 +7,7 @@ export const metadata = { title: "Step 1 of 3 — Retailer Onboarding" };
 export default function RetailerOnboardStep1Page() {
   return (
     <OnboardLayout
-      heading="Let me get to know you"
+      heading="Let's get to know you"
       description="We need a few details to verify who you are. This keeps your account and your business safe."
       backRoute="/entry_page/signup"
     >

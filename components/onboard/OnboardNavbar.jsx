@@ -18,15 +18,15 @@ export function OnboardNavbar({ backRoute }) {
   };
 
   return (
-    <header className="w-full bg-[#FFFFFF] border-b border-[#E0E0E0] px-[clamp(16px,3vw,48px)] py-[clamp(6px,0.8vw,12px)] flex items-center justify-between shadow-sm z-10">
+    <header className="w-full bg-[#FFFFFF] border-b border-[#E0E0E0] [.theme-retailer_&]:border-b-0 [.theme-retailer_&]:shadow-none [.theme-retailer_&]:bg-[#fefefe] px-[clamp(16px,3vw,48px)] py-[clamp(6px,0.8vw,12px)] flex items-center justify-between shadow-sm z-10">
       <button
         onClick={handleBack}
-        className="flex items-center gap-2 hover:bg-gray-100 transition-colors px-3 py-1.5 rounded-full"
+        className="flex items-center gap-2 hover:bg-gray-100 transition-colors px-3 py-1.5 rounded-full [.theme-retailer_&]:bg-[#eaeaea] [.theme-retailer_&]:rounded-[8px] [.theme-retailer_&]:pl-[4px] [.theme-retailer_&]:pr-[8px] [.theme-retailer_&]:py-[8px] [.theme-retailer_&]:gap-[4px]"
       >
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-[clamp(14px,1.5vw,16px)] h-[clamp(14px,1.5vw,16px)] text-[#374151]">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        <span className="text-[#374151] font-medium text-[clamp(12px,1.4vw,14px)] tracking-wide">Back</span>
+        <span className="text-[#374151] font-medium text-[clamp(12px,1.4vw,14px)] tracking-wide [.theme-retailer_&]:text-[16px] [.theme-retailer_&]:text-[#545454] [.theme-retailer_&]:tracking-normal">Back</span>
       </button>
 
       <button

@@ -28,7 +28,7 @@ export function ImageUploadBox({ label, image, onUpload, onRemove, error, object
     ? "border-[2px] border-solid border-[#22C55E]"
     : error
       ? "border-[1.5px] border-dashed border-[#EF4444]"
-      : "border-[1.5px] border-dashed border-[#2563EB]";
+      : "border-[1.5px] border-dashed border-[#2563EB] [.theme-retailer_&]:border-2 [.theme-retailer_&]:border-[#1974cf]";
 
   const imageClassName = objectFit === "contain"
     ? "w-full h-full object-contain p-4"
@@ -36,11 +36,11 @@ export function ImageUploadBox({ label, image, onUpload, onRemove, error, object
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      {label && <span className="text-[13px] font-semibold text-[#374151]">{label}</span>}
+      {label && <span className="text-[13px] font-semibold text-[#374151] [.theme-retailer_&]:text-[16px] [.theme-retailer_&]:text-[#46403b]">{label}</span>}
 
       <div
         onClick={() => { if (!hasImage && inputRef.current) inputRef.current.click() }}
-        className={`w-full bg-[#EEF4FF] rounded-[12px] hover:bg-blue-50 transition-colors cursor-pointer ${aspectRatio} relative overflow-hidden flex items-center justify-center ${borderClass}`}
+        className={`w-full bg-[#EEF4FF] rounded-[12px] [.theme-retailer_&]:bg-[#e6f3ff] [.theme-retailer_&]:rounded-[8px] hover:bg-blue-50 transition-colors cursor-pointer ${aspectRatio} relative overflow-hidden flex items-center justify-center ${borderClass}`}
       >
         {hasImage ? (
           <>
@@ -68,7 +68,7 @@ export function ImageUploadBox({ label, image, onUpload, onRemove, error, object
             </button>
           </>
         ) : (
-          <div className={`w-12 h-12 rounded-full border-2 ${error ? 'border-[#EF4444] text-[#EF4444]' : 'border-[#2563EB] text-[#2563EB]'} flex items-center justify-center`}>
+          <div className={`w-12 h-12 rounded-full border-2 ${error ? 'border-[#EF4444] text-[#EF4444]' : 'border-[#2563EB] text-[#2563EB] [.theme-retailer_&]:border-[#1974cf] [.theme-retailer_&]:text-[#1974cf]'} flex items-center justify-center [.theme-retailer_&]:w-[68px] [.theme-retailer_&]:h-[68px]`}>
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-[26px] h-[26px]"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
           </div>
         )}

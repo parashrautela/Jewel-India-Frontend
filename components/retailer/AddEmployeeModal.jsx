@@ -2,18 +2,15 @@
 
 import { useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import Image from "next/image";
 import { validateIndianMobile } from "../../lib/utils/credentials";
 
-const COPY_ICON = "https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777306236/retailerProfile_COPY_szewo3.svg";
-
 const inputClass =
-  "w-full h-[56px] bg-[#F8F8F8] rounded-[12px] px-[20px] font-medium text-[15px] text-[#111827] outline-none border border-transparent focus:bg-white focus:border-gray-100 transition-all";
+  "w-full h-[56px] bg-[#fafafa] rounded-[8px] px-[21px] font-semibold text-[16px] text-[#1b1917] placeholder-[#a8a19c] outline-none border border-[#ededed] focus:border-[#a8a19c] transition-colors";
 
 function Field({ label, hint, children }) {
   return (
-    <div className="flex flex-col gap-2">
-      <label className="text-[13px] font-bold text-[#111827] uppercase tracking-wide">{label}</label>
+    <div className="flex flex-col gap-[12px]">
+      <label className="text-[16px] font-semibold text-[#46403b] uppercase">{label}</label>
       {children}
       {hint && <span className="text-[12px] font-medium text-[#6B7280]">{hint}</span>}
     </div>
@@ -23,13 +20,13 @@ function Field({ label, hint, children }) {
 function CopyField({ label, value, copied, onCopy }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-extrabold text-[#4B5563] uppercase tracking-wide">{label}</label>
+      <label className="text-[16px] font-semibold text-[#46403b] uppercase">{label}</label>
       <div className="relative">
         <input
           type="text"
           readOnly
           value={value}
-          className="w-full h-[56px] bg-[#F9FAFB] rounded-[10px] pl-[16px] pr-[48px] text-[15px] font-bold text-[#111827] outline-none font-mono"
+          className="w-full h-[56px] bg-[#fafafa] border border-[#ededed] rounded-[8px] pl-[21px] pr-[52px] text-[16px] font-semibold text-[#1b1917] outline-none font-mono"
         />
         <button
           type="button"
@@ -37,7 +34,7 @@ function CopyField({ label, value, copied, onCopy }) {
           title="Copy"
           className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-200 rounded-md transition-colors"
         >
-          <Image src={COPY_ICON} alt="Copy" width={20} height={20} loading="lazy" className="object-contain" />
+          <img src="/retailer-admin/copy-muted.svg" alt="Copy" width={24} height={24} />
         </button>
       </div>
       {copied && <span className="text-[12px] font-semibold text-[#166534]">Copied</span>}
@@ -221,20 +218,17 @@ function AddEmployeeDialog({ onClose, onChanged }) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-[480px] rounded-[16px] border border-white shadow-[0_10px_40px_rgba(0,0,0,0.1)] relative flex flex-col p-6 sm:p-8 max-h-[90vh] overflow-y-auto overscroll-contain">
+      <div className="bg-white w-full max-w-[440px] rounded-[24px] border border-[#e3e3e3] shadow-[0_0_15.8px_rgba(157,157,157,0.19)] relative flex flex-col px-[27px] pt-[29px] pb-[27px] max-h-[90vh] overflow-y-auto overscroll-contain">
 
         {/* Close Button */}
-        <button onClick={onClose} className="absolute top-6 right-6 text-[#111827] hover:opacity-70 transition-opacity">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
+        <button onClick={onClose} className="absolute top-[37px] right-[37px] hover:opacity-70 transition-opacity" aria-label="Close">
+          <img src="/retailer-admin/x.svg" alt="" width={24} height={24} />
         </button>
 
         {/* Header */}
         <div className="mb-6">
-          <h2 className="text-[24px] font-bold text-[#111827] leading-tight">Add New Employee</h2>
-          <p className="text-[15px] text-[#9CA3AF] mt-1">New Member, New Access</p>
+          <h2 className="text-[18px] leading-[27px] font-bold tracking-[-0.44px] text-[#0f172b]">Add New Employee</h2>
+          <p className="text-[18px] leading-[27px] tracking-[-0.44px] text-[#868686] mt-[6px]">New Member, New Access</p>
         </div>
 
         {/* Mode — only before anything has been created */}
@@ -273,7 +267,7 @@ function AddEmployeeDialog({ onClose, onChanged }) {
               <button
                 onClick={handleSuggest}
                 disabled={isLoading}
-                className="h-[52px] px-8 bg-black text-white font-bold text-[16px] rounded-[12px] hover:bg-black/90 transition-all shadow-[0_4px_14px_rgba(0,0,0,0.3)] disabled:opacity-70 disabled:cursor-not-allowed whitespace-nowrap"
+                className="h-[48px] px-[24px] min-w-[179px] bg-black text-white font-semibold text-[16px] rounded-[8px] border border-[#e4cc8f] shadow-[0_4px_4px_rgba(0,0,0,0.25),inset_4px_4px_4px_rgba(228,204,143,0.39)] hover:opacity-90 transition-opacity disabled:opacity-70 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {isLoading ? "Loading..." : "Next"}
               </button>
@@ -317,7 +311,7 @@ function AddEmployeeDialog({ onClose, onChanged }) {
               <button
                 onClick={handleCreate}
                 disabled={isLoading}
-                className="h-[48px] px-6 bg-black text-white font-medium text-[15px] rounded-[12px] hover:bg-gray-800 shadow-md shadow-black/20 transition-colors disabled:opacity-70"
+                className="h-[48px] px-[24px] min-w-[179px] bg-black text-white font-semibold text-[16px] rounded-[8px] border border-[#e4cc8f] shadow-[0_4px_4px_rgba(0,0,0,0.25),inset_4px_4px_4px_rgba(228,204,143,0.39)] hover:opacity-90 transition-opacity disabled:opacity-70"
               >
                 {isLoading ? "Creating..." : "Create login"}
               </button>
@@ -350,7 +344,7 @@ function AddEmployeeDialog({ onClose, onChanged }) {
               <span className="text-[13px] text-[#9CA3AF]">They sign in at {loginUrl.replace(/^https?:\/\//, "")}</span>
               <button
                 onClick={finish}
-                className="h-[48px] px-10 bg-black text-white font-medium text-[15px] rounded-[12px] hover:bg-gray-800 shadow-md shadow-black/20 transition-colors"
+                className="h-[48px] px-[24px] min-w-[179px] bg-black text-white font-semibold text-[16px] rounded-[8px] border border-[#e4cc8f] shadow-[0_4px_4px_rgba(0,0,0,0.25),inset_4px_4px_4px_rgba(228,204,143,0.39)] hover:opacity-90 transition-opacity"
               >
                 Done
               </button>
@@ -367,7 +361,7 @@ function AddEmployeeDialog({ onClose, onChanged }) {
               <button
                 onClick={handleInvite}
                 disabled={isLoading}
-                className="h-[52px] px-8 bg-black text-white font-bold text-[16px] rounded-[12px] hover:bg-black/90 transition-all shadow-[0_4px_14px_rgba(0,0,0,0.3)] disabled:opacity-70 disabled:cursor-not-allowed whitespace-nowrap"
+                className="h-[48px] px-[24px] min-w-[179px] bg-black text-white font-semibold text-[16px] rounded-[8px] border border-[#e4cc8f] shadow-[0_4px_4px_rgba(0,0,0,0.25),inset_4px_4px_4px_rgba(228,204,143,0.39)] hover:opacity-90 transition-opacity disabled:opacity-70 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {isLoading ? "Inviting..." : "Invite"}
               </button>
@@ -395,7 +389,7 @@ function AddEmployeeDialog({ onClose, onChanged }) {
             <div className="mt-2 flex justify-end">
               <button
                 onClick={finish}
-                className="h-[48px] px-10 bg-black text-white font-medium text-[15px] rounded-[12px] hover:bg-gray-800 shadow-md shadow-black/20 transition-colors"
+                className="h-[48px] px-[24px] min-w-[179px] bg-black text-white font-semibold text-[16px] rounded-[8px] border border-[#e4cc8f] shadow-[0_4px_4px_rgba(0,0,0,0.25),inset_4px_4px_4px_rgba(228,204,143,0.39)] hover:opacity-90 transition-opacity"
               >
                 Done
               </button>

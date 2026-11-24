@@ -19,7 +19,7 @@ export function RetailerIdentityForm({ name, setName, aadhar, setAadhar, submitA
   return (
     <div className="flex flex-col gap-6 w-84">
       <div className="flex flex-col gap-1">
-        <label htmlFor="retailer-name" className="text-[13px] font-semibold text-[#374151]">
+        <label htmlFor="retailer-name" className="text-[16px] font-semibold text-[#46403b]">
           Name*
         </label>
         <input
@@ -28,7 +28,7 @@ export function RetailerIdentityForm({ name, setName, aadhar, setAadhar, submitA
           value={name}
           onChange={handleNameChange}
           placeholder="Priya Sharma"
-          className={`w-full bg-[#F5F5F5] rounded-[8px] outline-none px-[clamp(10px,1.5vw,16px)] py-[clamp(8px,1.2vw,14px)] text-[clamp(13px,1.4vw,15px)] text-[#374151] placeholder:text-[#9CA3AF] transition-shadow ${
+          className={`w-full bg-[#fafafa] border border-[#ededed] rounded-[8px] min-h-[56px] placeholder-[#a8a19c] outline-none px-[clamp(10px,1.5vw,16px)] py-[clamp(8px,1.2vw,14px)] text-[clamp(13px,1.4vw,15px)] text-[#374151] placeholder:text-[#9CA3AF] transition-shadow ${
             isNameError
               ? "border-[1.5px] border-[#EF4444]"
               : "border-none focus:ring-2 focus:ring-black/10"
@@ -38,7 +38,7 @@ export function RetailerIdentityForm({ name, setName, aadhar, setAadhar, submitA
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="retailer-aadhar" className="text-[13px] font-semibold text-[#374151]">
+        <label htmlFor="retailer-aadhar" className="text-[16px] font-semibold text-[#46403b]">
           Aadhar Number*
         </label>
         <input
@@ -47,7 +47,7 @@ export function RetailerIdentityForm({ name, setName, aadhar, setAadhar, submitA
           value={aadhar}
           onChange={handleAadharChange}
           placeholder="**** **** ****"
-          className={`w-full bg-[#F5F5F5] rounded-[8px] outline-none px-[clamp(10px,1.5vw,16px)] py-[clamp(8px,1.2vw,14px)] text-[clamp(13px,1.4vw,15px)] text-[#374151] placeholder:text-[#9CA3AF] transition-shadow ${
+          className={`w-full bg-[#fafafa] border border-[#ededed] rounded-[8px] min-h-[56px] placeholder-[#a8a19c] outline-none px-[clamp(10px,1.5vw,16px)] py-[clamp(8px,1.2vw,14px)] text-[clamp(13px,1.4vw,15px)] text-[#374151] placeholder:text-[#9CA3AF] transition-shadow ${
             isAadharError
               ? "border-[1.5px] border-[#EF4444]"
               : "border-none focus:ring-2 focus:ring-black/10"
