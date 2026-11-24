@@ -37,13 +37,13 @@ function ProductCard({ product, isSelected, onToggle, onClick, disabled }) {
       onClick={() => onClick && onClick(product)}
     >
       {/* Image */}
-      <div className="relative aspect-square w-full overflow-hidden rounded-[16px] bg-[#F9F9F9]">
+      <div className="relative aspect-square w-full overflow-hidden bg-white border-b-2 border-[#484848]">
         {!imgError && imageUrl ? (
           <Image
             src={imageUrl}
             alt={title}
             fill
-            className="h-full w-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
+            className="h-full w-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
             onError={() => setImgError(true)}
           />
         ) : (
@@ -54,12 +54,12 @@ function ProductCard({ product, isSelected, onToggle, onClick, disabled }) {
       </div>
 
       {/* Details */}
-      <div className="flex flex-col pt-3 border-t border-[#111] mt-4">
-        <h3 className="text-[13px] font-bold text-[#111827] leading-snug line-clamp-1 mb-1">
+      <div className="flex flex-col gap-[8px] pt-[8px]">
+        <h3 className="text-[14px] leading-[17.5px] font-bold text-[#1a1a1a] line-clamp-1">
           {title}
         </h3>
         <div className="flex items-center justify-between">
-          <span className="text-[12px] text-[#6B7280]">
+          <span className="text-[12px] leading-[18px] text-[#888]">
             {formatWeight(product.net_weight) || "20g"}
           </span>
           
@@ -72,9 +72,9 @@ function ProductCard({ product, isSelected, onToggle, onClick, disabled }) {
             disabled={isUpdating || disabled}
             onClick={handleToggle}
             data-selected={isSelected}
-            className="relative w-11 h-6 rounded-full transition-colors disabled:opacity-50 bg-[#E5E5EA] data-[selected=true]:bg-[#22C55E] focus-visible:outline-2 focus-visible:outline-offset-4"
+            className="relative w-[40px] h-[20px] rounded-full transition-colors disabled:opacity-50 bg-[#E5E5EA] data-[selected=true]:bg-[#27ae60] focus-visible:outline-2 focus-visible:outline-offset-4"
           >
-            <span className={`absolute top-[3px] left-[3px] bg-white w-[18px] h-[18px] rounded-full shadow-sm transition-transform ${isSelected ? 'translate-x-5' : 'translate-x-0'}`} />
+            <span className={`absolute top-[2px] left-[4px] bg-white w-[16px] h-[16px] rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.1)] transition-transform ${isSelected ? 'translate-x-[16px]' : 'translate-x-0'}`} />
           </button>
         </div>
       </div>
@@ -139,45 +139,44 @@ export default function YourTasteClient({ products, selectedProductIds, category
   };
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col gap-6">
+    <div className="flex-1 w-full max-w-[1058px] px-6 lg:pl-0 lg:pr-9 pt-[27px] pb-10 flex flex-col gap-[28px]">
       {/* Header */}
       <div>
-        <h1 className="text-[clamp(24px,3vw,28px)] font-extrabold text-[#111827] tracking-tight mb-1">
+        <h1 className="text-[24px] leading-[32px] font-bold text-[#0f172b] tracking-[0.07px] mb-[4px]">
           Your Taste
         </h1>
-        <p className="text-[14px] text-[#6B7280]">
+        <p className="text-[14px] leading-[20px] font-medium text-[#62748e] tracking-[-0.15px]">
           Let&apos;s curate the product which justifies your store and your taste
         </p>
       </div>
 
       {/* Main Box Area */}
-      <div className="flex flex-col gap-8 relative mt-2">
+      <div className="flex flex-col gap-8 relative bg-white rounded-[24px] px-[35px] pt-[43px] pb-[40px] min-h-[695px]">
         
         <RetailerCatalogueSearch
           designs={searchProducts}
           categoryOptions={categoryTabs}
           renderCategories={(activeCategory, setActiveCategory) => <>
         {/* Categories Row */}
-        <div className="flex flex-wrap gap-3 md:gap-4 justify-start pb-6 pt-4 px-2">
+        <div className="flex flex-wrap gap-[8px] md:gap-x-[8px] items-end justify-start">
           {categoryTabs.map((tab) => {
             const isActive = activeCategory === tab.slug;
             return (
               <button
                 key={tab.slug}
                 onClick={() => setActiveCategory(tab.slug === activeCategory ? "all" : tab.slug)}
-                className="flex flex-col items-center gap-3 group outline-none w-[calc(33.33%-8px)] sm:w-auto"
+                className="flex flex-col items-center gap-[4px] group outline-none w-[104px]"
               >
                 <div 
-                  className={`w-[65px] h-[65px] md:w-[75px] md:h-[75px] rounded-[16px] overflow-hidden transition-all duration-300 bg-[#F9F9F9] relative shadow-sm ${isActive ? 'scale-110 ring-2 ring-black ring-offset-4 z-10' : 'hover:scale-105'}`}
-                  style={isActive ? { transform: 'scale(1.1)' } : {}}
+                  className={`rounded-[8px] overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f6e0a7] to-[#bb8651] relative ${isActive ? 'w-[88px] h-[88px]' : 'w-[64px] h-[64px] hover:scale-105'}`}
                 >
                   {tab.image ? (
                     <Image 
                       src={tab.image} 
                       alt={tab.name} 
-                      width={75} 
-                      height={75} 
-                      className="w-full h-full object-contain block" 
+                      width={88} 
+                      height={88} 
+                      className="w-full h-full object-cover block" 
                     />
                   ) : (
                     <div className="w-full h-full bg-[#F9F9F9] flex items-center justify-center text-[#111827] text-xs font-bold">
@@ -185,7 +184,7 @@ export default function YourTasteClient({ products, selectedProductIds, category
                     </div>
                   )}
                 </div>
-                <span className={`text-[13px] text-center transition-colors ${isActive ? 'text-[#111827] font-extrabold' : 'text-[#9CA3AF] font-bold group-hover:text-[#6B7280]'}`}>
+                <span className={`text-[16px] text-center whitespace-nowrap transition-colors ${isActive ? 'text-[#545454] font-bold' : 'text-[#a9a9a9] font-medium group-hover:text-[#545454]'}`}>
                   {tab.name}
                 </span>
               </button>
@@ -194,9 +193,10 @@ export default function YourTasteClient({ products, selectedProductIds, category
           
           <button 
             onClick={() => setActiveCategory("all")}
-            className="flex items-center gap-2 ml-2 text-[#111827] font-bold text-[14px] hover:underline w-[calc(33.33%-8px)] sm:w-auto justify-center sm:justify-start"
+            className="flex items-center gap-[8px] ml-[8px] self-center text-black font-bold text-[16px] leading-[1.5]"
           >
-            View All <span className="text-xl leading-none">→</span>
+            <span className="underline">View All</span>
+            <img src="/retailer-admin/arrow-right-long.svg" alt="" width={24} height={24} className="-scale-y-100 rotate-180" />
           </button>
         </div>
 
@@ -210,17 +210,17 @@ export default function YourTasteClient({ products, selectedProductIds, category
           <div className="flex flex-wrap gap-2 items-center">
             <button
               onClick={() => setFilterState(filterState === "selected" ? "all" : "selected")}
-              className={`flex items-center gap-1.5 px-4 h-11 md:h-auto py-0 md:py-2 rounded-full text-[12px] font-bold tracking-wide transition-colors ${filterState === "selected" ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`flex items-center gap-1.5 px-[16px] h-[40px] rounded-full text-[14px] font-medium tracking-[-0.15px] transition-colors ${filterState === "selected" ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               Already selected
-              {filterState === "selected" && <span className="text-[14px] ml-1 leading-none font-normal">×</span>}
+              {filterState === "selected" && <img src="/retailer-admin/x-white.svg" alt="" width={12} height={12} className="ml-[4px]" />}
             </button>
             <button
               onClick={() => setFilterState(filterState === "unselected" ? "all" : "unselected")}
-              className={`flex items-center gap-1.5 px-4 h-11 md:h-auto py-0 md:py-2 rounded-full text-[12px] font-bold tracking-wide transition-colors ${filterState === "unselected" ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`flex items-center gap-1.5 px-[16px] h-[40px] rounded-full text-[14px] font-medium tracking-[-0.15px] transition-colors ${filterState === "unselected" ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               Show Unselected
-              {filterState === "unselected" && <span className="text-[14px] ml-1 leading-none font-normal">×</span>}
+              {filterState === "unselected" && <img src="/retailer-admin/x-white.svg" alt="" width={12} height={12} className="ml-[4px]" />}
             </button>
           </div>
 
@@ -256,7 +256,7 @@ export default function YourTasteClient({ products, selectedProductIds, category
         {selectionError && <p role="alert" className="text-sm text-red-700">{selectionError}</p>}
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-[repeat(4,216px)] gap-x-[28px] gap-y-[40px]">
           {!searchBusy && filteredProducts.map((p) => (
             <ProductCard 
               key={p.id} 

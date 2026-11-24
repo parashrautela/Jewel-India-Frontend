@@ -26,9 +26,9 @@ export default async function RetailerLayout({ children }) {
   }
 
   return (
-    <CreditsProvider><div className="theme-retailer flex min-h-screen bg-[#F0F2F5]">
+    <CreditsProvider><div className="theme-retailer flex min-h-screen bg-[#f1f2f3]">
       <RetailerSidebar retailer={retailerData} />
-      <main className="flex-1 min-w-0 ml-0 lg:ml-[200px] pt-0 md:pt-[60px] lg:pt-0 pb-[92px] md:pb-0 min-h-screen flex flex-col transition-all duration-300">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-[247px] pt-0 md:pt-[60px] lg:pt-0 pb-[92px] md:pb-0 min-h-screen flex flex-col transition-all duration-300">
         {children}
       </main>
       

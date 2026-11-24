@@ -1,18 +1,24 @@
 "use client";
 
 import { useState, useMemo, useDeferredValue } from "react";
-import Image from "next/image";
 
-const COPY_ICON = "https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777306236/retailerProfile_COPY_szewo3.svg";
-const TRASH_ICON = "https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777306235/retailerProfile_TRASH_v21ak2.svg";
 
 const STATUS_CHIPS = {
-  active: { label: "Active", className: "bg-[#DCFCE7] text-[#166534]" },
-  invited: { label: "Invited", className: "bg-[#DBEAFE] text-[#1D4ED8]" },
-  inactive: { label: "Off", className: "bg-[#FEF3C7] text-[#B45309]" },
+  active: { label: "Active", className: "bg-[#dcfce7] text-[#15803d]" },
+  invited: { label: "Invited", className: "bg-[#dbeafe] text-[#1d4ed8]" },
+  inactive: { label: "Inactive", className: "bg-[#fef3c7] text-[#b45309]" },
 };
 
 const chipFor = (emp) => STATUS_CHIPS[emp.status] || STATUS_CHIPS.inactive;
+
+const initialsOf = (name) => name?.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "?";
+
+// Soft radial avatar backgrounds from the Figma employee rows.
+const AVATARS = [
+  { border: "0.2px solid #60a5e8", background: "radial-gradient(circle, #ffffff 0%, #f1f4c6 85%, #ffffff 100%)" },
+  { border: "0.2px solid #d0d0d0", background: "radial-gradient(circle, #fea7fe 0%, #fed3fe 35%, #ffffff 70%)" },
+  { border: "0.2px solid #cacaca", background: "radial-gradient(circle, #cdfedd 0%, #ffffff 60%)" },
+];
 
 export function EmployeeTable({ employees, onToggleStatus, onDelete, onUpdate }) {
   const [deletingId, setDeletingId] = useState(null);
@@ -147,7 +153,7 @@ export function EmployeeTable({ employees, onToggleStatus, onDelete, onUpdate })
         disabled={togglingId === emp.id}
         className={className}
       >
-        {emp.status === "active" ? "Deactivate" : "Reactivate"}
+        {emp.status === "active" ? "Deactivate" : "Activate"}
       </button>
     );
   };
@@ -167,95 +173,70 @@ export function EmployeeTable({ employees, onToggleStatus, onDelete, onUpdate })
   return (
     <div className="w-full flex flex-col gap-6">
       {/* Search Input */}
-      <div className="relative w-full shadow-[0_2px_10px_rgba(0,0,0,0.03)] rounded-[12px]">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-[18px] h-[18px] text-[#9CA3AF]">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
+      <div className="relative w-full">
+        <img src="/retailer-admin/search.svg" alt="" width={20} height={20} className="absolute left-[12px] top-[8px] pointer-events-none" />
         <input
           type="text"
           placeholder="Search employees by name or email..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          className="w-full bg-white border border-gray-100 rounded-[12px] pl-11 pr-4 h-[52px] text-[14px] outline-none focus:ring-2 focus:ring-black/5 text-[#111827] placeholder-[#9CA3AF]"
+          className="w-full h-[36px] bg-white border border-[#e2e8f0] rounded-[12px] pl-[40px] pr-[12px] text-[14px] tracking-[-0.15px] text-[#0f172b] placeholder-[#717182] outline-none focus:border-[#94a3b8]"
         />
       </div>
 
       {/* Employee Table - Desktop/Tablet */}
-      <div className="bg-white border border-gray-100 rounded-[16px] shadow-[0_2px_10px_rgba(0,0,0,0.03)] overflow-hidden hidden md:block">
+      <div className="bg-white border border-[#e2e8f0] rounded-[24px] hidden md:block min-h-[615px] px-[32px] pt-px">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px] text-left border-collapse">
+          <table className="w-full min-w-[760px] text-left border-collapse">
             <thead>
-              <tr>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#6B7280]">Employee</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#6B7280]">Login</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#6B7280]">Role</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#6B7280]">Status</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#6B7280]">Last Active</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#6B7280] text-right">Actions</th>
+              <tr className="border-b border-[rgba(0,0,0,0.1)] h-[40px]">
+                {["Employee", "Contact", "Role", "Status", "Last Active"].map((h) => (
+                  <th key={h} className="px-[8px] text-[14px] font-medium tracking-[-0.15px] text-[#0a0a0a]">{h}</th>
+                ))}
+                <th className="px-[8px] text-[14px] font-medium tracking-[-0.15px] text-[#0a0a0a] text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredEmployees.map((emp) => {
+            <tbody>
+              {filteredEmployees.map((emp, i) => {
                 const chip = chipFor(emp);
                 return (
-                  <tr key={emp.id} className="hover:bg-gray-50/30 transition-colors">
-                    {/* Employee */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
+                  <tr key={emp.id} className="border-b border-[rgba(0,0,0,0.1)] last:border-b-0 h-[57px]">
+                    <td className="px-[8px] whitespace-nowrap">
+                      <div className="flex items-center gap-[12px]">
                         <div
-                          className="w-[40px] h-[40px] rounded-full flex items-center justify-center text-[15px] font-bold text-[#4B5563] shrink-0 border border-black/5"
-                          style={{ backgroundColor: getPastelColor(emp.full_name) }}
+                          className="w-[40px] h-[40px] rounded-full flex items-center justify-center shrink-0 text-[16px] font-medium text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.63)]"
+                          style={AVATARS[i % AVATARS.length]}
                         >
-                          {emp.full_name?.charAt(0)?.toUpperCase() || "?"}
+                          {initialsOf(emp.full_name)}
                         </div>
-                        <span className="text-[14px] font-bold text-[#111827]">{emp.full_name}</span>
+                        <span className="text-[14px] font-medium tracking-[-0.15px] text-[#0f172b]">{emp.full_name}</span>
                       </div>
                     </td>
-
-                    {/* Login */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex flex-col">
-                        <span className="text-[13px] font-medium text-[#111827]">{emp.email}</span>
-                        <span className="text-[12px] text-[#9CA3AF]">
-                          {emp.join_method === "google" ? "Signs in with Google" : "Signs in with a password"}
-                          {emp.phone ? ` · ${emp.phone}` : ""}
+                    <td className="px-[8px] whitespace-nowrap">
+                      <div className="flex flex-col leading-[20px] text-[14px] tracking-[-0.15px]">
+                        <span className="text-[#0f172b]">{emp.email}</span>
+                        <span className="text-[#62748e]">
+                          {emp.phone || (emp.join_method === "google" ? "Signs in with Google" : "Signs in with a password")}
                         </span>
                       </div>
                     </td>
-
-                    {/* Role */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-[13px] text-[#6B7280]">{emp.designation}</span>
-                    </td>
-
-                    {/* Status */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`inline-flex items-center px-2.5 py-1 rounded-[6px] text-[12px] font-semibold ${chip.className}`}>
+                    <td className="px-[8px] whitespace-nowrap text-[14px] tracking-[-0.15px] text-[#314158]">{emp.designation}</td>
+                    <td className="px-[8px] whitespace-nowrap">
+                      <span className={`inline-flex items-center px-[8px] py-[4px] rounded-[6px] text-[12px] leading-[16px] font-medium tracking-[0.24px] ${chip.className}`}>
                         {chip.label}
-                      </div>
-                    </td>
-
-                    {/* Last Active */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-[13px] text-[#9CA3AF]">
-                        {emp.last_active_at ? emp.last_active_at : "---"}
                       </span>
                     </td>
-
-                    {/* Actions */}
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-3">
+                    <td className="px-[8px] whitespace-nowrap text-[14px] tracking-[-0.15px] text-[#62748e]">
+                      {emp.last_active_at ? emp.last_active_at : "---"}
+                    </td>
+                    <td className="px-[8px] whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-[8px]">
                         {renderPrimaryAction(
                           emp,
-                          "px-3 py-1.5 border border-gray-200 rounded-[8px] text-[13px] font-medium text-[#4B5563] hover:border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                          "h-[32px] px-[13px] bg-white border border-[rgba(0,0,0,0.1)] rounded-[8px] text-[14px] font-medium tracking-[-0.15px] text-[#0a0a0a] hover:bg-gray-50 transition-colors disabled:opacity-50"
                         )}
-                        <button
-                          onClick={() => openActions(emp)}
-                          className="p-1 text-[#9CA3AF] hover:text-[#111827] transition-colors"
-                        >
-                          {moreIcon}
+                        <button onClick={() => openActions(emp)} className="hover:opacity-70 transition-opacity" aria-label="More actions">
+                          <img src="/retailer-admin/ellipsis.svg" alt="" width={24} height={24} />
                         </button>
                       </div>
                     </td>
@@ -264,7 +245,7 @@ export function EmployeeTable({ employees, onToggleStatus, onDelete, onUpdate })
               })}
               {filteredEmployees.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="px-6 py-10 text-center text-[#9CA3AF] text-[14px]">
+                  <td colSpan="6" className="px-6 py-10 text-center text-[#62748e] text-[14px]">
                     No employees found matching your search.
                   </td>
                 </tr>
@@ -345,84 +326,57 @@ export function EmployeeTable({ employees, onToggleStatus, onDelete, onUpdate })
         )}
       </div>
 
-      {/* Actions Modal Overlay */}
+      {/* Actions dialog (Figma: Retailer admin page → Employees → Actions) */}
       {actionsEmployee && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white w-full max-w-[480px] rounded-[16px] border border-white shadow-[0_10px_40px_rgba(0,0,0,0.1)] relative flex flex-col p-6 sm:p-8 max-h-[90vh] overflow-y-auto overscroll-contain">
-
-            <button onClick={closeActions} className="absolute top-6 right-6 text-black hover:opacity-70 transition-opacity">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white w-full max-w-[512px] rounded-[10px] border border-[rgba(0,0,0,0.1)] shadow-[0_10px_15px_rgba(0,0,0,0.1),0_4px_6px_rgba(0,0,0,0.1)] relative flex flex-col p-[24px] max-h-[90vh] overflow-y-auto overscroll-contain">
+            <button onClick={closeActions} className="absolute top-[16px] right-[16px] w-[16px] h-[16px] opacity-70 hover:opacity-100 transition-opacity" aria-label="Close">
+              <span className="absolute inset-1/4"><img src="/retailer-admin/close-a.svg" alt="" className="absolute inset-[-8.33%] max-w-none" /></span>
+              <span className="absolute inset-1/4"><img src="/retailer-admin/close-b.svg" alt="" className="absolute inset-[-8.33%] max-w-none" /></span>
             </button>
 
-            <h2 className="text-[20px] font-extrabold text-[#111827] mb-1">{actionsEmployee.full_name}</h2>
-            <p className="text-[13px] text-[#9CA3AF] mb-6">
-              {isOwnerRow
-                ? "Store owner"
-                : actionsEmployee.join_method === "google"
-                  ? isInvitedRow ? "Invited — signs in with Google" : "Signs in with Google"
-                  : "Signs in with a password"}
+            <h2 className="text-[18px] leading-[18px] font-bold tracking-[-0.44px] text-[#0a0a0a]">Actions</h2>
+            <p className="text-[14px] text-[#717182] mt-[8px]">
+              {actionsEmployee.full_name}
+              {isOwnerRow ? " · Store owner" : actionsEmployee.join_method === "google" ? (isInvitedRow ? " · Invited, signs in with Google" : " · Signs in with Google") : ""}
             </p>
 
-            <div className="flex flex-col gap-5">
-              {/* Login */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[14px] font-bold text-[#111827]">
-                  {actionsEmployee.join_method === "google" ? "Google account" : "Username"}
-                </label>
+            <div className="flex flex-col gap-[16px] mt-[24px]">
+              <div className="flex flex-col gap-[8px]">
+                <label className="text-[14px] leading-[14px] font-medium tracking-[-0.15px] text-[#0a0a0a]">{actionsEmployee.join_method === "google" ? "Google account" : "Email id"}</label>
                 <div className="relative">
-                  <input
-                    type="text"
-                    readOnly
-                    value={actionsEmployee.email || ""}
-                    className="w-full h-[48px] bg-[#F3F4F6] rounded-[10px] pl-[14px] pr-[48px] text-[15px] text-[#6B7280] outline-none"
-                  />
-                  <button
-                    onClick={() => copyToClipboard("login", actionsEmployee.email)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-200 rounded-md transition-colors"
-                    title="Copy"
-                  >
-                    <Image src={COPY_ICON} alt="Copy" width={20} height={20} loading="lazy" className="object-contain" />
+                  <input type="text" readOnly value={actionsEmployee.email || ""} className="w-full h-[36px] bg-[#f3f3f5] rounded-[8px] pl-[12px] pr-[44px] text-[14px] tracking-[-0.15px] text-[#717182] outline-none" />
+                  <button onClick={() => copyToClipboard("login", actionsEmployee.email)} className="absolute right-[12px] top-1/2 -translate-y-1/2 hover:opacity-70" title="Copy">
+                    <img src="/retailer-admin/copy-muted.svg" alt="Copy" width={24} height={24} />
                   </button>
                 </div>
-                {copied === "login" && <span className="text-[12px] font-semibold text-[#166534]">Copied</span>}
+                {copied === "login" && <span className="text-[12px] font-semibold text-[#15803d]">Copied</span>}
               </div>
 
-              {/* Password — reset only; nothing is stored to show */}
+              {/* Password: nothing is stored to show, so it can only be reset */}
               {canResetPassword && (
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[14px] font-bold text-[#111827]">Password</label>
+                <div className="flex flex-col gap-[8px]">
+                  <label className="text-[14px] leading-[14px] font-medium tracking-[-0.15px] text-[#0a0a0a]">Password</label>
                   {newPassword ? (
                     <>
                       <div className="relative">
-                        <input
-                          type="text"
-                          readOnly
-                          value={newPassword}
-                          className="w-full h-[48px] bg-[#F3F4F6] rounded-[10px] pl-[14px] pr-[48px] text-[15px] text-[#111827] outline-none font-mono"
-                        />
-                        <button
-                          onClick={() => copyToClipboard("password", newPassword)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-200 rounded-md transition-colors"
-                          title="Copy Password"
-                        >
-                          <Image src={COPY_ICON} alt="Copy" width={18} height={18} loading="lazy" className="object-contain" />
+                        <input type="text" readOnly value={newPassword} className="w-full h-[36px] bg-[#f3f3f5] rounded-[8px] pl-[12px] pr-[44px] text-[14px] tracking-[-0.15px] text-[#717182] outline-none !text-[#0a0a0a] font-mono" />
+                        <button onClick={() => copyToClipboard("password", newPassword)} className="absolute right-[12px] top-1/2 -translate-y-1/2 hover:opacity-70" title="Copy password">
+                          <img src="/retailer-admin/copy-muted.svg" alt="Copy" width={24} height={24} />
                         </button>
                       </div>
-                      {copied === "password" && <span className="text-[12px] font-semibold text-[#166534]">Copied</span>}
+                      {copied === "password" && <span className="text-[12px] font-semibold text-[#15803d]">Copied</span>}
                       <p className="text-[12px] text-[#92400E] bg-[#FFFBEB] border border-[#FDE68A] rounded-[8px] px-3 py-2 leading-relaxed">
                         Save it now. It&apos;s shown only this once and isn&apos;t stored anywhere.
                       </p>
                     </>
                   ) : (
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-[13px] text-[#6B7280]">Forgotten? Give them a new one.</span>
+                    <div className="flex items-center justify-between gap-3 h-[36px] bg-[#f3f3f5] rounded-[8px] pl-[12px] pr-[4px]">
+                      <span className="text-[14px] tracking-[-0.15px] text-[#717182]">*****************</span>
                       <button
                         onClick={handleResetPassword}
                         disabled={isResetting}
-                        className="h-[40px] px-4 border border-gray-300 rounded-[10px] text-[13px] font-bold text-[#111827] hover:bg-gray-50 transition-colors disabled:opacity-60 whitespace-nowrap"
+                        className="h-[28px] px-[10px] bg-white border border-[rgba(0,0,0,0.1)] rounded-[6px] text-[13px] font-medium text-[#0a0a0a] hover:bg-gray-50 disabled:opacity-60 whitespace-nowrap"
                       >
                         {isResetting ? "Resetting..." : "Reset password"}
                       </button>
@@ -431,22 +385,16 @@ export function EmployeeTable({ employees, onToggleStatus, onDelete, onUpdate })
                 </div>
               )}
 
-              {/* Designation */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[14px] font-bold text-[#111827]">Designation</label>
+              <div className="flex flex-col gap-[8px]">
+                <label className="text-[14px] leading-[14px] font-medium tracking-[-0.15px] text-[#0a0a0a]">Designation</label>
                 <div className="relative w-fit">
                   <input
                     type="text"
                     value={editDesignation}
                     onChange={(e) => setEditDesignation(e.target.value)}
-                    className="h-[40px] bg-[#F3F4F6] rounded-[10px] pl-[14px] pr-[44px] text-[14px] text-[#4B5563] outline-none focus:ring-2 focus:ring-black/10 min-w-[140px] max-w-full cursor-pointer"
+                    className="h-[36px] bg-[#f3f3f5] rounded-[8px] pl-[12px] pr-[44px] text-[14px] tracking-[-0.15px] text-[#717182] outline-none focus:ring-2 focus:ring-black/10 min-w-[123px] max-w-full"
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                  </div>
+                  <img src="/retailer-admin/square-pen.svg" alt="" width={24} height={24} className="absolute right-[10px] top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
 
@@ -454,9 +402,8 @@ export function EmployeeTable({ employees, onToggleStatus, onDelete, onUpdate })
                 <p className="text-[13px] font-medium text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{actionError}</p>
               )}
 
-              {/* Info Box */}
-              <div className="bg-[#EFF6FF] border border-[#BFDBFE] rounded-[10px] p-4 mt-2">
-                <p className="text-[13px] text-[#1D4ED8] leading-relaxed">
+              <div className="bg-[#eff6ff] border border-[#bedbff] rounded-[10px] px-[13px] py-[13px] mt-[10px]">
+                <p className="text-[14px] leading-[20px] tracking-[-0.15px] text-[#193cb8]">
                   <span className="font-bold">Login credentials:</span>{" "}
                   {actionsEmployee.join_method === "google"
                     ? "This person signs in with their Google account; there is no password to manage."
@@ -464,25 +411,21 @@ export function EmployeeTable({ employees, onToggleStatus, onDelete, onUpdate })
                 </p>
               </div>
 
-              {/* Bottom Buttons */}
               {showDeleteConfirm ? (
-                <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-100">
-                  <span className="text-[14px] font-bold text-red-600">
+                <div className="flex flex-col gap-3 pt-2">
+                  <span className="text-[14px] font-bold text-[#b91c1c]">
                     {isInvitedRow
                       ? "Cancel this invitation? They won't be able to join with this address until you invite them again."
                       : "Remove this employee? Their login stops working immediately."}
                   </span>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="flex-1 h-[44px] px-6 bg-white border border-gray-300 text-[#111827] font-medium text-[14px] rounded-[10px] hover:bg-gray-50 transition-colors"
-                    >
+                  <div className="flex items-center justify-end gap-[8px]">
+                    <button onClick={() => setShowDeleteConfirm(false)} className="h-[36px] px-[17px] bg-white border border-[rgba(0,0,0,0.1)] rounded-[8px] text-[14px] font-medium text-[#0a0a0a] hover:bg-gray-50">
                       Keep
                     </button>
                     <button
                       onClick={() => handleDelete(actionsEmployee.id)}
                       disabled={deletingId === actionsEmployee.id}
-                      className="flex-1 h-[44px] px-6 bg-[#DC2626] text-white font-medium text-[14px] rounded-[10px] hover:bg-red-700 transition-colors disabled:opacity-70 flex items-center justify-center"
+                      className="h-[36px] px-[17px] bg-[#DC2626] text-white text-[14px] font-medium rounded-[8px] hover:bg-red-700 disabled:opacity-70"
                     >
                       {deletingId === actionsEmployee.id
                         ? (isInvitedRow ? "Cancelling..." : "Removing...")
@@ -491,39 +434,33 @@ export function EmployeeTable({ employees, onToggleStatus, onDelete, onUpdate })
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-between mt-4 pt-2">
-                  <div className="flex gap-2">
+                <div className="flex items-center justify-end gap-[8px] pt-[5px]">
+                  {/* The owner's own row is never removed */}
+                  {!isOwnerRow && (
                     <button
-                      onClick={closeActions}
-                      className="h-[44px] px-6 bg-white border border-gray-300 text-[#111827] font-medium text-[14px] rounded-[10px] hover:bg-gray-50 transition-colors"
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="h-[36px] flex items-center gap-[8px] pl-[8px] pr-[12px] bg-[#fee2e2] rounded-[8px] text-[14px] font-medium tracking-[0.28px] text-[#b91c1c] hover:bg-red-200 transition-colors"
                     >
-                      Close
+                      <img src="/retailer-admin/trash.svg" alt="" width={16} height={16} />
+                      {isInvitedRow ? "CANCEL INVITATION" : "DELETE ACCOUNT"}
                     </button>
-                    {/* The owner's own row is never removed */}
-                    {!isOwnerRow && (
-                      <button
-                        onClick={() => setShowDeleteConfirm(true)}
-                        className="flex items-center justify-center w-[44px] h-[44px] bg-[#FEE2E2] text-[#B91C1C] rounded-[10px] hover:bg-red-200 transition-colors"
-                        title={isInvitedRow ? "Cancel invitation" : "Remove employee"}
-                      >
-                        <Image src={TRASH_ICON} alt="Trash" width={18} height={18} loading="lazy" />
-                      </button>
-                    )}
-                  </div>
-
-                  {editDesignation !== actionsEmployee.designation && (
+                  )}
+                  {editDesignation !== actionsEmployee.designation ? (
                     <button
                       onClick={handleApplyDesignation}
                       disabled={isUpdatingDesignation}
-                      className="h-[44px] px-6 bg-black text-white font-medium text-[14px] rounded-[10px] hover:bg-gray-800 transition-colors disabled:opacity-70"
+                      className="h-[36px] px-[17px] bg-black text-white text-[14px] font-medium rounded-[8px] hover:bg-gray-800 disabled:opacity-70"
                     >
                       {isUpdatingDesignation ? "Applying..." : "Apply"}
+                    </button>
+                  ) : (
+                    <button onClick={closeActions} className="h-[36px] px-[17px] bg-white border border-[rgba(0,0,0,0.1)] rounded-[8px] text-[14px] font-medium tracking-[-0.15px] text-[#0a0a0a] hover:bg-gray-50">
+                      Close
                     </button>
                   )}
                 </div>
               )}
             </div>
-
           </div>
         </div>
       )}

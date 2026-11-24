@@ -1,17 +1,24 @@
 import Link from "next/link";
 import { memo } from "react";
 
-const ArrowButton = ({ href }) => (
-  <Link
-    href={href}
-    className="w-[44px] h-[44px] bg-black rounded-full flex items-center justify-center hover:bg-gray-900 transition-colors shrink-0"
-  >
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="7" y1="17" x2="17" y2="7" />
-      <polyline points="7 7 17 7 17 17" />
-    </svg>
-  </Link>
-);
+/** Black 38 px circle with the up-right arrow (Figma: Retailer admin page → Dashboard). */
+export const ArrowCircle = ({ href, onClick, label }) => {
+  const inner = (
+    <>
+      <img src="/retailer-admin/arrow-circle.svg" alt="" width={38} height={38} className="absolute inset-0" />
+      <img src="/retailer-admin/arrow.svg" alt="" width={24} height={24} className="relative rotate-90" />
+    </>
+  );
+  const cls = "relative w-[38px] h-[38px] flex items-center justify-center shrink-0 hover:opacity-85 transition-opacity";
+  return href ? (
+    <Link href={href} className={cls} aria-label={label}>{inner}</Link>
+  ) : (
+    <button type="button" onClick={onClick} className={cls} aria-label={label}>{inner}</button>
+  );
+};
+
+export const statCard = "bg-white rounded-[24px] h-[160px] w-full px-[16px] pt-[16px] pb-[18px] flex flex-col justify-between";
+export const statTitle = "text-[20px] font-medium tracking-[-0.4px] text-[rgba(0,0,0,0.8)] leading-[38px]";
 
 function DashboardStats({
   employeesCount,
@@ -21,19 +28,11 @@ function DashboardStats({
   archivedDesigns,
   isLoading,
 }) {
-  const cardClass = "bg-white rounded-[20px] p-5 flex flex-col justify-between shadow-[0_2px_12px_rgba(0,0,0,0.05)] relative h-[160px] w-full";
-
   if (isLoading) {
     return (
       <>
-        <div className={`${cardClass} animate-pulse`}>
-          <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-          <div className="h-10 bg-gray-200 rounded w-1/4"></div>
-        </div>
-        <div className={`${cardClass} animate-pulse`}>
-          <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-          <div className="h-10 bg-gray-200 rounded w-1/4"></div>
-        </div>
+        <div className={`${statCard} animate-pulse`} />
+        <div className={`${statCard} animate-pulse`} />
       </>
     );
   }
@@ -42,37 +41,34 @@ function DashboardStats({
 
   return (
     <>
-      {/* Total Employees */}
-      <div className={cardClass}>
-        <div className="flex justify-between items-start">
-          <h3 className="text-[15px] font-medium text-[#111111]">Total Employee</h3>
-          <ArrowButton href="/dashboard/retailer/employees" />
-        </div>
+      {/* Total Employee */}
+      <div className={statCard}>
+        <h3 className={statTitle}>Total Employee</h3>
         <div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[48px] font-bold text-[#111111] leading-none tracking-tight">
+          <div className="flex items-baseline gap-[6px]">
+            <span className="text-[64px] font-medium tracking-[-1.28px] text-black leading-[0.75]">
               {activeEmployeesCount || 0}
             </span>
-            <span className="text-[15px] text-[#6B7280] font-medium mb-1">Active</span>
+            <span className="text-[20px] font-medium tracking-[-0.4px] text-[rgba(0,0,0,0.54)]">Active</span>
           </div>
-          <p className="text-[13px] text-[#9CA3AF] mt-1">
-            {employeesCount || 0} total <span className="mx-1">•</span> {inactiveEmployees} inactive
+          <p className="text-[14px] font-medium tracking-[-0.28px] text-[#999] mt-[14px]">
+            {employeesCount || 0} total <span className="text-black">• {inactiveEmployees} inactive</span>
           </p>
         </div>
       </div>
 
       {/* Store Designs */}
-      <div className={cardClass}>
+      <div className={statCard}>
         <div className="flex justify-between items-start">
-          <h3 className="text-[15px] font-medium text-[#111111]">Store Designs</h3>
-          <ArrowButton href="/dashboard/retailer/catalogue" />
+          <h3 className={statTitle}>Store Designs</h3>
+          <ArrowCircle href="/dashboard/retailer/catalogue" label="Open catalogue" />
         </div>
         <div>
-          <span className="text-[48px] font-bold text-[#111111] leading-none tracking-tight">
+          <span className="block text-[64px] font-medium tracking-[-1.28px] text-black leading-[0.75]">
             {activeDesigns || 0}
           </span>
-          <p className="text-[13px] text-[#9CA3AF] mt-1">
-            {totalDesigns || 0} total <span className="mx-1">•</span> {archivedDesigns || 0} archived
+          <p className="text-[14px] font-medium tracking-[-0.28px] text-[#999] mt-[14px]">
+            {totalDesigns || 0} total <span className="text-black">• {archivedDesigns || 0} archived</span>
           </p>
         </div>
       </div>

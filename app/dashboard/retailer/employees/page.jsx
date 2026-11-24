@@ -104,12 +104,12 @@ export default function RetailerEmployeesPage() {
 
   return (
     <div className="flex flex-col min-h-screen relative">
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-10 py-10">
-        <div className="flex flex-col gap-1 mb-8">
-          <h1 className="text-[clamp(28px,3vw,32px)] font-extrabold text-[#111827] tracking-tight">
+      <main className="flex-1 w-full max-w-[908px] px-6 lg:pl-0 lg:pr-9 pt-[27px] pb-10">
+        <div className="flex flex-col gap-[4px] mb-[28px]">
+          <h1 className="text-[24px] leading-[32px] font-bold text-[#0f172b] tracking-[0.07px]">
             Employees
           </h1>
-          <p className="text-[14px] text-[#6B7280]">
+          <p className="text-[14px] leading-[20px] font-medium text-[#62748e] tracking-[-0.15px]">
             Welcome back! Here&apos;s an overview of your employees
           </p>
         </div>

@@ -207,33 +207,33 @@ export default function UploadDesignPage() {
           </Link>
         </div>
 
-        <div className="max-w-[860px] mx-auto pt-20 md:pt-28 px-4 md:px-8">
-          <div className="text-center mb-16">
-            <h1 className="text-[clamp(28px,4vw,32px)] font-extrabold text-[#111827] tracking-tight">Add new product</h1>
-            <p className="text-[14px] text-[#6B7280] mt-2">Enter the details below to create a sparkling new listing.</p>
+        <div className="max-w-[846px] mx-auto pt-20 md:pt-[111px] px-4 md:px-0">
+          <div className="text-center mb-[60px]">
+            <h1 className="text-[40px] leading-[1.1] font-bold text-black">Add new product</h1>
+            <p className="text-[18px] text-[#737373] mt-[16px]">Enter the details below to create a sparkling new listing.</p>
           </div>
 
           <div className="flex flex-col gap-16">
             {/* Section 1 */}
-            <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-[78px]">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center text-[13px] font-bold shrink-0">1</div>
-                  <h2 className="text-[22px] font-extrabold text-[#111827]">Product image</h2>
+                <div className="flex items-start gap-[24px] mb-[16px]">
+                  <div className="w-[28px] h-[28px] rounded-full bg-black text-white flex items-center justify-center text-[16px] shrink-0 mt-[6px]">1</div>
+                  <h2 className="text-[32px] leading-[1.25] font-semibold text-black">Product image</h2>
                 </div>
-                <p className="text-[14px] text-[#6B7280] mb-6 leading-relaxed">
+                <p className="text-[16px] leading-[24px] tracking-[0.32px] text-[#7d746d] mb-[22px] pl-[52px] max-w-[383px]">
                   Upload a clear image. We&apos;ll remove the background first, then enhance it.
                 </p>
                 
-                <h3 className="text-[13px] font-bold text-[#111827] mb-3">Get the best result from your photo</h3>
-                <ol className="text-[13px] text-[#6B7280] space-y-2 list-decimal pl-4">
+                <h3 className="text-[16px] leading-[24px] tracking-[0.32px] font-semibold text-black mb-[12px] pl-[52px]">Get the best result from your photo</h3>
+                <ol className="text-[16px] leading-[24px] tracking-[0.32px] text-[#7d746d] space-y-[8px] list-decimal pl-[76px] max-w-[407px]">
                   <li className="pl-1">Place the jewellery on a background that contrasts with the product.</li>
                   <li className="pl-1">You can add multiple image with max 5*</li>
                   <li className="pl-1">Keep only the product in the frame</li>
                 </ol>
               </div>
               
-              <div className="w-full md:w-[320px] shrink-0">
+              <div className="w-full md:w-[384px] shrink-0">
                 <div className="flex flex-wrap gap-3">
                   {previews.map((preview, idx) => (
                     <div key={idx} className="relative w-[100px] h-[100px] rounded-[12px] border border-gray-200 overflow-hidden group shrink-0">
@@ -255,15 +255,13 @@ export default function UploadDesignPage() {
                   ))}
                   
                   {previews.length === 0 ? (
-                    <label className={`flex flex-col items-center justify-center w-full aspect-[4/3] md:h-[200px] border-2 border-dashed rounded-[16px] cursor-pointer transition-colors ${
+                    <label className={`flex flex-col items-center justify-center w-full aspect-[384/249] md:h-[249px] border-2 border-dashed rounded-[8px] cursor-pointer transition-colors ${
                       errors.images
                         ? "border-red-400 bg-red-50 hover:bg-red-50/70"
-                        : "border-[#93C5FD] bg-[#EFF6FF] hover:bg-blue-50"
+                        : "border-[#1974cf] bg-[#e6f3ff] hover:bg-[#d9ecff]"
                     }`} id="images">
                       <input type="file" multiple className="hidden" accept="image/*" onChange={handleFileChange} />
-                      <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center ${errors.images ? "border-red-500 text-red-500" : "border-[#3B82F6] text-[#3B82F6]"}`}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                      </div>
+                      <img src="/retailer-admin/upload-plus.svg" alt="Add photos" width={68} height={68} />
                       {errors.images && (
                         <p className="text-[12px] font-semibold text-red-500 mt-2">{errors.images}</p>
                       )}
@@ -282,28 +280,30 @@ export default function UploadDesignPage() {
             </div>
 
             {/* Section 2 */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center text-[13px] font-bold shrink-0">2</div>
-                <h2 className="text-[22px] font-extrabold text-[#111827]">Essential Details</h2>
+            <div className="flex flex-col gap-[32px] md:grid md:grid-cols-[384px_384px] md:gap-x-[78px]">
+              <div>
+                <div className="flex items-start gap-[24px] mb-[16px]">
+                  <div className="w-[28px] h-[28px] rounded-full bg-black text-white flex items-center justify-center text-[16px] shrink-0 mt-[6px]">2</div>
+                  <h2 className="text-[32px] leading-[1.25] font-semibold text-black whitespace-nowrap">Essential Details</h2>
+                </div>
+                <p className="text-[16px] leading-[24px] tracking-[0.32px] text-[#7d746d] pl-[52px] max-w-[383px]">
+                  Add the key information that helps retailers understand and find this piece.
+                </p>
               </div>
-              <p className="text-[14px] text-[#6B7280] mb-8 leading-relaxed">
-                Add the key information that helps retailers understand and find this piece.
-              </p>
-              
-              <div className="flex flex-col gap-5">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[13px] font-bold text-[#4B5563]">Product Title</label>
+
+              <div className="contents">
+                <div className="flex flex-col gap-[12px] md:pt-[6px]">
+                  <label className="text-[16px] font-semibold text-[#46403b]">Product Title</label>
                   <input
                     type="text"
                     id="title"
                     placeholder="eg. Vintage gold Necklace"
                     value={title}
                     onChange={(e) => updateField("title", setTitle, e.target.value)}
-                    className={`w-full h-[48px] rounded-[8px] px-4 text-[14px] text-[#111827] outline-none transition-colors border ${
+                    className={`w-full h-[56px] rounded-[8px] px-[21px] text-[16px] font-semibold text-[#1b1917] placeholder-[#a8a19c] outline-none transition-colors border ${
                       errors.title
                         ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                        : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                        : "bg-[#fafafa] border-[#ededed] focus:border-[#a8a19c]"
                     }`}
                   />
                   {errors.title && (
@@ -311,18 +311,18 @@ export default function UploadDesignPage() {
                   )}
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-bold text-[#4B5563]">Type</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:col-span-2 md:w-[792px]">
+                  <div className="flex flex-col gap-[12px]">
+                    <label className="text-[16px] font-semibold text-[#46403b]">Type</label>
                     <div className="relative">
                       <select
                         id="category"
                         value={category}
                         onChange={(e) => updateField("category", setCategory, e.target.value)}
-                        className={`w-full h-[48px] rounded-[8px] px-4 pr-10 text-[14px] text-[#111827] outline-none transition-colors border appearance-none ${
+                        className={`w-full h-[56px] rounded-[8px] px-[21px] pr-[52px] text-[16px] font-semibold text-[#1b1917] placeholder-[#a8a19c] outline-none transition-colors border appearance-none ${
                           errors.category
                             ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                            : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                            : "bg-white border-[#ededed] focus:border-[#a8a19c]"
                         }`}
                       >
                         <option value="" disabled hidden>select</option>
@@ -336,8 +336,8 @@ export default function UploadDesignPage() {
                         <option value="Bangles">Bangles</option>
                         <option value="Nosepin">Nosepin</option>
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <div className="absolute right-[17px] top-1/2 -translate-y-1/2 pointer-events-none">
+                        <img src="/retailer-admin/chevron-down.svg" alt="" width={24} height={24} />
                       </div>
                     </div>
                     {errors.category && (
@@ -345,17 +345,17 @@ export default function UploadDesignPage() {
                     )}
                   </div>
                   
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-bold text-[#4B5563]">Material category</label>
+                  <div className="flex flex-col gap-[12px]">
+                    <label className="text-[16px] font-semibold text-[#46403b]">Material category</label>
                     <div className="relative">
                       <select
                         id="material"
                         value={material}
                         onChange={(e) => updateField("material", setMaterial, e.target.value)}
-                        className={`w-full h-[48px] rounded-[8px] px-4 pr-10 text-[14px] text-[#111827] outline-none transition-colors border appearance-none ${
+                        className={`w-full h-[56px] rounded-[8px] px-[21px] pr-[52px] text-[16px] font-semibold text-[#1b1917] placeholder-[#a8a19c] outline-none transition-colors border appearance-none ${
                           errors.material
                             ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                            : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                            : "bg-white border-[#ededed] focus:border-[#a8a19c]"
                         }`}
                       >
                         <option value="" disabled hidden>select</option>
@@ -364,8 +364,8 @@ export default function UploadDesignPage() {
                         <option value="Platinum">Platinum</option>
                         <option value="Diamond">Diamond</option>
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <div className="absolute right-[17px] top-1/2 -translate-y-1/2 pointer-events-none">
+                        <img src="/retailer-admin/chevron-down.svg" alt="" width={24} height={24} />
                       </div>
                     </div>
                     {errors.material && (
@@ -374,18 +374,18 @@ export default function UploadDesignPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-bold text-[#4B5563]">Style Aesthetic</label>
+                <div className="grid grid-cols-1 md:grid-cols-[384px_180px_180px] gap-[24px] md:col-span-2">
+                  <div className="flex flex-col gap-[12px]">
+                    <label className="text-[16px] font-semibold text-[#46403b]">Style Aesthetic</label>
                     <div className="relative">
                       <select
                         id="styleAesthetic"
                         value={styleAesthetic}
                         onChange={(e) => updateField("styleAesthetic", setStyleAesthetic, e.target.value)}
-                        className={`w-full h-[48px] rounded-[8px] px-4 pr-10 text-[14px] text-[#111827] outline-none transition-colors border appearance-none ${
+                        className={`w-full h-[56px] rounded-[8px] px-[21px] pr-[52px] text-[16px] font-semibold text-[#1b1917] placeholder-[#a8a19c] outline-none transition-colors border appearance-none ${
                           errors.styleAesthetic
                             ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                            : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                            : "bg-white border-[#ededed] focus:border-[#a8a19c]"
                         }`}
                       >
                         <option value="" disabled hidden>select</option>
@@ -394,8 +394,8 @@ export default function UploadDesignPage() {
                         <option value="Classic">Classic</option>
                         <option value="Minimal">Minimal</option>
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <div className="absolute right-[17px] top-1/2 -translate-y-1/2 pointer-events-none">
+                        <img src="/retailer-admin/chevron-down.svg" alt="" width={24} height={24} />
                       </div>
                     </div>
                     {errors.styleAesthetic && (
@@ -403,17 +403,17 @@ export default function UploadDesignPage() {
                     )}
                   </div>
                   
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-bold text-[#4B5563]">Size</label>
+                  <div className="flex flex-col gap-[12px]">
+                    <label className="text-[16px] font-semibold text-[#46403b]">Size</label>
                     <div className="relative">
                       <select
                         id="size"
                         value={size}
                         onChange={(e) => updateField("size", setSize, e.target.value)}
-                        className={`w-full h-[48px] rounded-[8px] px-4 pr-10 text-[14px] text-[#111827] outline-none transition-colors border appearance-none ${
+                        className={`w-full h-[56px] rounded-[8px] px-[21px] pr-[52px] text-[16px] font-semibold text-[#1b1917] placeholder-[#a8a19c] outline-none transition-colors border appearance-none ${
                           errors.size
                             ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                            : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                            : "bg-white border-[#ededed] focus:border-[#a8a19c]"
                         }`}
                       >
                         <option value="" disabled hidden>select</option>
@@ -422,8 +422,8 @@ export default function UploadDesignPage() {
                         <option value="Large">Large</option>
                         <option value="Adjustable">Adjustable</option>
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <div className="absolute right-[17px] top-1/2 -translate-y-1/2 pointer-events-none">
+                        <img src="/retailer-admin/chevron-down.svg" alt="" width={24} height={24} />
                       </div>
                     </div>
                     {errors.size && (
@@ -431,17 +431,17 @@ export default function UploadDesignPage() {
                     )}
                   </div>
                   
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-bold text-[#4B5563]">Purity</label>
+                  <div className="flex flex-col gap-[12px]">
+                    <label className="text-[16px] font-semibold text-[#46403b]">Purity</label>
                     <div className="relative">
                       <select
                         id="purity"
                         value={purity}
                         onChange={(e) => updateField("purity", setPurity, e.target.value)}
-                        className={`w-full h-[48px] rounded-[8px] px-4 pr-10 text-[14px] text-[#111827] outline-none transition-colors border appearance-none ${
+                        className={`w-full h-[56px] rounded-[8px] px-[21px] pr-[52px] text-[16px] font-semibold text-[#1b1917] placeholder-[#a8a19c] outline-none transition-colors border appearance-none ${
                           errors.purity
                             ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                            : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                            : "bg-white border-[#ededed] focus:border-[#a8a19c]"
                         }`}
                       >
                         <option value="" disabled hidden>select</option>
@@ -450,8 +450,8 @@ export default function UploadDesignPage() {
                         <option value="24K">24K</option>
                         <option value="925 Sterling">925 Sterling</option>
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <div className="absolute right-[17px] top-1/2 -translate-y-1/2 pointer-events-none">
+                        <img src="/retailer-admin/chevron-down.svg" alt="" width={24} height={24} />
                       </div>
                     </div>
                     {errors.purity && (
@@ -465,18 +465,18 @@ export default function UploadDesignPage() {
 
             {/* Section 3 */}
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center text-[13px] font-bold shrink-0">3</div>
-                <h2 className="text-[22px] font-extrabold text-[#111827]">Specifications</h2>
+              <div className="flex items-start gap-[24px] mb-[16px]">
+                <div className="w-[28px] h-[28px] rounded-full bg-black text-white flex items-center justify-center text-[16px] shrink-0 mt-[6px]">3</div>
+                <h2 className="text-[32px] leading-[1.25] font-semibold text-black">Specifications</h2>
               </div>
-              <p className="text-[14px] text-[#6B7280] mb-8 leading-relaxed">
+              <p className="text-[16px] leading-[24px] tracking-[0.32px] text-[#7d746d] mb-[32px] pl-[52px] max-w-[383px]">
                 Add weight and stone details so retailers know exactly what they&apos;re getting.
               </p>
 
-              <div className="flex flex-col gap-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-bold text-[#4B5563]">Gross weight</label>
+              <div className="flex flex-col gap-[32px] md:pl-[54px] md:max-w-[642px]">
+                <div className="grid grid-cols-1 md:grid-cols-[180px_180px_180px] gap-[24px]">
+                  <div className="flex flex-col gap-[12px]">
+                    <label className="text-[16px] font-semibold text-[#46403b]">Gross weight</label>
                     <div className="relative">
                       <input
                         type="number"
@@ -487,17 +487,17 @@ export default function UploadDesignPage() {
                         className={`w-full h-[48px] rounded-[8px] pl-4 pr-8 text-[14px] text-[#111827] outline-none transition-colors border ${
                           errors.grossWeight
                             ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                            : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                            : "bg-white border-[#ededed] focus:border-[#a8a19c]"
                         }`}
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[14px] text-[#9CA3AF] font-bold pointer-events-none">g</span>
+                      <span className="absolute right-0 top-0 h-full w-[54px] flex items-center justify-center border-l border-[#ededed] text-[16px] font-semibold text-[#a8a19c] pointer-events-none">g</span>
                     </div>
                     {errors.grossWeight && (
                       <p className="text-[11px] font-semibold text-red-500 mt-0.5 animate-fade-in">{errors.grossWeight}</p>
                     )}
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-bold text-[#4B5563]">Stone weight</label>
+                  <div className="flex flex-col gap-[12px]">
+                    <label className="text-[16px] font-semibold text-[#46403b]">Stone weight</label>
                     <div className="relative">
                       <input
                         type="number"
@@ -508,17 +508,17 @@ export default function UploadDesignPage() {
                         className={`w-full h-[48px] rounded-[8px] pl-4 pr-8 text-[14px] text-[#111827] outline-none transition-colors border ${
                           errors.stoneWeight
                             ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                            : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                            : "bg-white border-[#ededed] focus:border-[#a8a19c]"
                         }`}
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[14px] text-[#9CA3AF] font-bold pointer-events-none">g</span>
+                      <span className="absolute right-0 top-0 h-full w-[54px] flex items-center justify-center border-l border-[#ededed] text-[16px] font-semibold text-[#a8a19c] pointer-events-none">g</span>
                     </div>
                     {errors.stoneWeight && (
                       <p className="text-[11px] font-semibold text-red-500 mt-0.5 animate-fade-in">{errors.stoneWeight}</p>
                     )}
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-bold text-[#4B5563]">Net Weight</label>
+                  <div className="flex flex-col gap-[12px]">
+                    <label className="text-[16px] font-semibold text-[#46403b]">Net Weight</label>
                     <div className="relative">
                       <input
                         type="number"
@@ -529,10 +529,10 @@ export default function UploadDesignPage() {
                         className={`w-full h-[48px] rounded-[8px] pl-4 pr-8 text-[14px] text-[#111827] outline-none transition-colors border ${
                           errors.netWeight
                             ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                            : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                            : "bg-white border-[#ededed] focus:border-[#a8a19c]"
                         }`}
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[14px] text-[#9CA3AF] font-bold pointer-events-none">g</span>
+                      <span className="absolute right-0 top-0 h-full w-[54px] flex items-center justify-center border-l border-[#ededed] text-[16px] font-semibold text-[#a8a19c] pointer-events-none">g</span>
                     </div>
                     {errors.netWeight && (
                       <p className="text-[11px] font-semibold text-red-500 mt-0.5 animate-fade-in">{errors.netWeight}</p>
@@ -542,8 +542,8 @@ export default function UploadDesignPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[14px] font-bold text-[#111827]">Available in Stock</span>
-                    <span className="text-[12px] text-[#6B7280]">Is this piece ready to ship right away?</span>
+                    <span className="text-[16px] font-semibold text-black">Available in Stock</span>
+                    <span className="text-[16px] leading-[24px] tracking-[0.32px] text-[#7d746d]">Is this piece ready to ship right away?</span>
                   </div>
                   <div 
                     onClick={() => {
@@ -557,17 +557,17 @@ export default function UploadDesignPage() {
                         });
                       }
                     }}
-                    className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${inStock ? "bg-[#34D399]" : "bg-gray-200"}`}
+                    className={`w-[51px] h-[31px] flex items-center rounded-[100px] p-[2px] cursor-pointer transition-colors duration-200 ${inStock ? "bg-[#34c759]" : "bg-[rgba(120,120,128,0.16)]"}`}
                   >
                     <div 
-                      className={`bg-white w-4 h-4 rounded-full shadow-sm transform transition-transform duration-300 ${inStock ? "translate-x-6" : "translate-x-0"}`} 
+                      className={`bg-white w-[27px] h-[27px] rounded-full shadow-[0_3px_8px_rgba(0,0,0,0.15),0_3px_1px_rgba(0,0,0,0.06)] transform transition-transform duration-200 ${inStock ? "translate-x-[20px]" : "translate-x-0"}`} 
                     />
                   </div>
                 </div>
 
                 {!inStock && (
                   <div className="flex flex-col gap-1.5 w-full md:w-[320px] animate-fade-in">
-                    <label className="text-[13px] font-bold text-[#4B5563]">Production time</label>
+                    <label className="text-[16px] font-semibold text-[#46403b]">Production time</label>
                     <div className="relative">
                       <input
                         type="number"
@@ -578,7 +578,7 @@ export default function UploadDesignPage() {
                         className={`w-full h-[48px] rounded-[8px] pl-4 pr-12 text-[14px] text-[#111827] outline-none transition-colors border ${
                           errors.productionTime
                             ? "bg-red-50 border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400"
-                            : "bg-[#F9FAFB] border-transparent focus:ring-2 focus:ring-black/5"
+                            : "bg-white border-[#ededed] focus:border-[#a8a19c]"
                         }`}
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-[#9CA3AF] pointer-events-none">days</span>

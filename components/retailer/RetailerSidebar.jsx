@@ -9,6 +9,7 @@ import { memo, useMemo, useState, useEffect, useRef } from "react";
 const NAV_ITEMS = [
   {
     name: "Dashboard",
+    iconSrc: "/retailer-admin/nav-dashboard.svg",
     href: "/dashboard/retailer",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   },
   {
     name: "Employees",
+    iconSrc: "/retailer-admin/nav-employees.svg",
     href: "/dashboard/retailer/employees",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -31,6 +33,7 @@ const NAV_ITEMS = [
   },
   {
     name: "Catalogue",
+    iconSrc: "/retailer-admin/nav-catalogue.svg",
     href: "/dashboard/retailer/catalogue",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -41,6 +44,7 @@ const NAV_ITEMS = [
   },
   {
     name: "Your Taste",
+    iconSrc: "/retailer-admin/nav-taste.svg",
     href: "/dashboard/retailer/your-taste",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -50,6 +54,7 @@ const NAV_ITEMS = [
   },
   {
     name: "Store Theme",
+    iconSrc: "/retailer-admin/nav-theme.svg",
     href: "/dashboard/retailer/theme",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -405,16 +410,15 @@ function RetailerSidebar({ retailer }) {
         }
       `}</style>
 
-      {/* Sidebar Drawer */}
+      {/* Sidebar: "New Employee" button above a floating white card (Figma: Retailer admin page) */}
       <aside
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-dvh z-50 flex flex-col w-[200px] bg-white border-r border-gray-100 transition-transform duration-300 lg:translate-x-0 overflow-y-auto overflow-x-hidden overscroll-contain hidden md:flex ${
+        className={`fixed top-0 left-0 h-dvh z-50 w-[230px] flex-col gap-3 bg-[#f1f2f3] px-[19px] pt-[27px] pb-[36px] transition-transform duration-300 lg:translate-x-0 overflow-y-auto overflow-x-hidden overscroll-contain hidden md:flex ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
-        style={{ padding: "20px 16px 24px 16px" }}
       >
-        {/* Close button inside drawer for mobile */}
-        <div className="flex justify-end lg:hidden mb-2 shrink-0">
+        {/* Close button inside drawer for tablet */}
+        <div className="flex justify-end lg:hidden shrink-0">
           <button
             onClick={() => setIsOpen(false)}
             className="p-1 text-gray-500 hover:text-black focus:outline-none"
@@ -427,103 +431,95 @@ function RetailerSidebar({ retailer }) {
           </button>
         </div>
 
-        {/* New Employee Button in Sidebar (desktop-only / fallback) */}
         <Link
           href="?modal=add-employee"
           scroll={false}
           onClick={() => setIsOpen(false)}
-          className="sidebar-new-emp w-full h-[44px] rounded-[10px] flex items-center justify-center text-[14px] font-semibold text-[#3B82F6] hover:opacity-90 transition-opacity mb-6 shrink-0 lg:flex hidden"
-          style={{ backgroundColor: "#DBEAFE" }}
+          className="w-[192px] h-[52px] rounded-[10px] bg-[#c3d6ff] hidden lg:flex items-center justify-center text-[14px] font-medium tracking-[-0.15px] text-[#1e70f6] hover:opacity-90 transition-opacity shrink-0"
         >
           New Employee
         </Link>
 
-        {/* User Profile */}
-        <div className="sidebar-profile flex items-center gap-2.5 mb-7 px-1 shrink-0">
-          <div className="w-[36px] h-[36px] rounded-full overflow-hidden bg-gray-200 shrink-0 border-2 border-gray-100">
-            <Image src={logoUrl} alt="Logo" width={36} height={36} className="object-cover w-full h-full" />
+        <div className="w-[192px] flex-1 min-h-[600px] max-h-[705px] bg-white rounded-[12px] flex flex-col px-[4px] shrink-0">
+          {/* Profile */}
+          <div className="flex items-center gap-[4px] h-[80px] px-[4px] shrink-0">
+            <div className="w-[40px] h-[40px] rounded-[8px] overflow-hidden bg-gray-200 shrink-0">
+              <Image src={logoUrl} alt="Logo" width={40} height={40} className="object-cover w-full h-full" />
+            </div>
+            <div className="flex flex-col gap-[2px] min-w-0">
+              <span className="text-[16px] font-medium text-[#404040] truncate leading-normal">{retailerName}</span>
+              <span className="text-[14px] font-medium text-[#727272] truncate leading-normal">{businessName}</span>
+            </div>
           </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-[14px] font-bold text-[#111111] truncate leading-tight">{retailerName}</span>
-            <span className="text-[12px] text-[#6B7280] truncate leading-tight">{businessName}</span>
-          </div>
-        </div>
+          <div className="border-t border-[#e5e5e5] shrink-0" />
 
-        {/* Navigation */}
-        <nav className="flex flex-col gap-0.5 flex-1 shrink-0">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              prefetch={true}
-              onClick={() => setIsOpen(false)}
-              className={`sidebar-nav-item flex items-center gap-3 h-[42px] rounded-[10px] px-3 transition-all shrink-0 ${
-                item.isActive
-                  ? "bg-[#F3F4F6] text-[#111111]"
-                  : "text-[#6B7280] hover:bg-gray-50 hover:text-[#374151]"
-              }`}
-            >
-              <span className={item.isActive ? "text-[#111111]" : "text-[#9CA3AF]"}>
-                {item.icon}
-              </span>
-              <span className={`text-[14px] ${item.isActive ? "font-semibold" : "font-medium"}`}>
+          {/* Navigation */}
+          <nav className="flex flex-col gap-[4px] pt-[16px] pb-[16px] shrink-0">
+            {navItems.slice(0, 5).map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                prefetch={true}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-[12px] h-[36px] rounded-[8px] px-[12px] transition-colors shrink-0 text-[14px] font-medium tracking-[-0.15px] text-[#525252] ${
+                  item.isActive ? "bg-[rgba(1,10,15,0.1)]" : "hover:bg-[rgba(1,10,15,0.05)]"
+                }`}
+              >
+                <img src={item.iconSrc} alt="" width={item.name === "Catalogue" ? 17 : 16} height={16} className="shrink-0" />
                 {item.name}
-              </span>
-            </Link>
-          ))}
-        </nav>
+              </Link>
+            ))}
+          </nav>
+          <div className="border-t border-[#e5e5e5] shrink-0" />
 
-        {/* Bottom: Illustration + Logout */}
-        <div className="shrink-0">
-          <div className="sidebar-illustration flex justify-center mb-5 pointer-events-none lg:block hidden">
-            <Image
-              src="https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777301517/retailer_profile_gucmsl.svg"
-              alt="3D Illustration"
-              width={110}
-              height={110}
-              className="object-contain mx-auto"
-            />
-          </div>
-
-          {/* Toggle Context Button */}
-          <button
-            onClick={async () => {
-              setIsOpen(false);
-              try {
-                const res = await fetch("/api/auth/toggle-view", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ mode: "employee" }),
-                });
-                if (res.ok) {
-                  window.location.href = "/dashboard/employee";
-                } else {
-                  // TODO: add proper error handling
+          {/* Not in the Figma: kept so wishlists, credits and employee view stay reachable */}
+          <nav className="flex flex-col gap-[4px] pt-[16px] shrink-0">
+            {navItems.slice(5).map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-[12px] h-[36px] rounded-[8px] px-[12px] transition-colors text-[14px] font-medium tracking-[-0.15px] text-[#525252] ${
+                  item.isActive ? "bg-[rgba(1,10,15,0.1)]" : "hover:bg-[rgba(1,10,15,0.05)]"
+                }`}
+              >
+                <span className="w-[16px] text-center text-[#525252]">{item.icon}</span>
+                {item.name}
+              </Link>
+            ))}
+            <button
+              onClick={async () => {
+                setIsOpen(false);
+                try {
+                  const res = await fetch("/api/auth/toggle-view", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ mode: "employee" }),
+                  });
+                  if (res.ok) window.location.href = "/dashboard/employee";
+                } catch {
+                  // stays on the retailer view
                 }
-              } catch (err) {
-                // TODO: add proper error handling
-              }
-            }}
-            className="flex items-center gap-2.5 w-full px-1 py-2 text-[#6B7280] hover:text-[#3B82F6] transition-colors group mb-2 border-none bg-transparent cursor-pointer outline-none text-left"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-60 group-hover:opacity-100 group-hover:text-[#3B82F6]">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            <span className="text-[13px] font-bold tracking-wider">EMPLOYEE VIEW</span>
-          </button>
+              }}
+              className="flex items-center gap-[12px] h-[36px] rounded-[8px] px-[12px] text-[14px] font-medium tracking-[-0.15px] text-[#525252] hover:bg-[rgba(1,10,15,0.05)] text-left"
+            >
+              <img src="/retailer-admin/nav-employees.svg" alt="" width={16} height={16} className="shrink-0" />
+              Employee view
+            </button>
+          </nav>
 
-          <form action={signOut} onSubmit={() => setIsOpen(false)}>
+          <div className="flex-1" />
+          <div className="flex justify-center pointer-events-none shrink-0 pb-[16px]">
+            <Image src="/retailer-admin/sidebar-illustration.png" alt="" width={130} height={130} className="object-cover" />
+          </div>
+          <div className="border-t border-[#e5e5e5] shrink-0" />
+          <form action={signOut} onSubmit={() => setIsOpen(false)} className="py-[10px] shrink-0">
             <button
               type="submit"
-              className="flex items-center gap-2.5 w-full px-1 py-2 text-[#6B7280] hover:text-[#111111] transition-colors group"
+              className="flex items-center gap-[12px] w-full h-[36px] rounded-[8px] px-[12px] text-[14px] font-medium tracking-[-0.15px] text-[#525252] hover:bg-[rgba(1,10,15,0.05)]"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-60 group-hover:opacity-100">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
-              </svg>
-              <span className="text-[13px] font-bold tracking-wider">LOG OUT</span>
+              <img src="/retailer-admin/nav-logout.svg" alt="" width={16} height={16} className="shrink-0" />
+              LOG OUT
             </button>
           </form>
         </div>

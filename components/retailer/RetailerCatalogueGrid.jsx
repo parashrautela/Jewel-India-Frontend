@@ -5,36 +5,36 @@ import Image from "next/image";
 
 const TagChip = memo(function TagChip({ type, label }) {
   if (!label) return null;
-  
   if (type === "material") {
     return (
-      <span className="flex items-center gap-1.5 rounded-[6px] bg-[#FEF3C7] px-2.5 py-1 text-[12px] font-medium text-[#B45309]">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></span>
+      <span className="flex items-center gap-[4px] rounded-[6px] bg-[#fef3c7] pl-[4px] pr-[8px] py-[4px] text-[12px] leading-[16px] font-medium tracking-[0.24px] text-[#b45309] whitespace-nowrap">
+        <img src="/retailer-admin/dot-gold.svg" alt="" width={12} height={12} />
         {label}
       </span>
     );
   }
   return (
-    <span className="rounded-[6px] bg-[#E0E7FF] px-2.5 py-1 text-[12px] font-medium text-[#4338CA]">
+    <span className="rounded-[6px] bg-[#ddebfc] px-[8px] py-[4px] text-[12px] leading-[16px] font-medium tracking-[0.24px] text-[#2555d0] whitespace-nowrap">
       {label}
     </span>
   );
 });
 
+/** iOS-style switch from the Figma (51×31). */
 const ToggleSwitch = memo(function ToggleSwitch({ isOn, onToggle }) {
   return (
-    <div 
+    <button
+      type="button"
+      role="switch"
+      aria-checked={!!isOn}
+      aria-label="Archive"
       onClick={(e) => { e.stopPropagation(); onToggle(); }}
-      className="group -my-2.5 -mx-1.5 md:my-0 md:mx-0 w-11 h-11 md:w-11 md:h-6 flex items-center justify-center cursor-pointer"
+      className={`relative w-[51px] h-[31px] rounded-[100px] shrink-0 transition-colors duration-200 ${isOn ? "bg-[#34c759]" : "bg-[rgba(120,120,128,0.16)]"}`}
     >
-      <div 
-        className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${isOn ? "bg-black" : "bg-gray-200"}`}
-      >
-        <div
-          className={`bg-white w-4 h-4 rounded-full shadow-sm transform transition-transform duration-300 ${isOn ? "translate-x-5" : "translate-x-0"}`}
-        />
-      </div>
-    </div>
+      <span
+        className={`absolute top-[2px] left-[2px] w-[27px] h-[27px] rounded-full bg-white shadow-[0_3px_8px_rgba(0,0,0,0.15),0_3px_1px_rgba(0,0,0,0.06)] transition-transform duration-200 ${isOn ? "translate-x-[20px]" : ""}`}
+      />
+    </button>
   );
 });
 
@@ -42,21 +42,22 @@ const DesignCard = memo(function DesignCard({ design, onArchiveToggle }) {
   const [imgError, setImgError] = useState(false);
   const title = design.title || "Untitled design";
   const tags = Array.isArray(design.tags) ? design.tags : [];
-  
+
   // Extract a material and type from tags if available
   const material = tags.find(t => ["Gold", "Silver", "Platinum", "Diamond", "Rose Gold"].includes(t)) || "Gold";
   const type = tags.find(t => t !== material) || design.category || "Necklace";
 
   return (
-    <article className="flex flex-col rounded-[14px] bg-white overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow">
-      <div className="relative aspect-square w-full bg-gray-50 overflow-hidden">
+    <article className="flex flex-col rounded-[24px] bg-white border border-[#e7e7e7] overflow-hidden p-[7px] pb-[14px] w-full max-w-[256px]">
+      <div className="relative aspect-[240/241] w-full rounded-[16px] bg-gray-50 overflow-hidden">
         {!imgError && design.image_url ? (
           <Image
             src={design.image_url}
             alt={title}
             fill
+            sizes="240px"
             loading="lazy"
-            className="h-full w-full object-cover"
+            className="object-cover"
             onError={() => setImgError(true)}
           />
         ) : (
@@ -66,25 +67,17 @@ const DesignCard = memo(function DesignCard({ design, onArchiveToggle }) {
         )}
       </div>
 
-      <div className="flex flex-col p-5">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-[14px] font-bold text-[#111827] truncate pr-2">
-            {title}
-          </h3>
-          <span className="text-[12px] text-[#9CA3AF] font-medium shrink-0">Archive</span>
-        </div>
-
-        <div className="flex items-center justify-between mt-1">
-          <div className="flex items-center gap-2 overflow-hidden pr-2">
+      <div className="flex items-start justify-between gap-2 px-[8px] pt-[10px]">
+        <div className="flex flex-col gap-[12px] min-w-0">
+          <h3 className="text-[14px] leading-[20px] font-bold tracking-[0.07px] text-black truncate">{title}</h3>
+          <div className="flex items-center gap-[8px] overflow-hidden">
             <TagChip type="material" label={material} />
             <TagChip type="category" label={type} />
           </div>
-          <div className="shrink-0">
-            <ToggleSwitch 
-              isOn={design.is_archived} 
-              onToggle={() => onArchiveToggle(design)} 
-            />
-          </div>
+        </div>
+        <div className="flex flex-col items-end gap-[8px] shrink-0">
+          <span className="text-[14px] font-semibold text-[#545454]">Archive</span>
+          <ToggleSwitch isOn={design.is_archived} onToggle={() => onArchiveToggle(design)} />
         </div>
       </div>
     </article>
@@ -94,9 +87,9 @@ const DesignCard = memo(function DesignCard({ design, onArchiveToggle }) {
 export function RetailerCatalogueGrid({ designs, isLoading, onArchiveToggle }) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[repeat(3,256px)] gap-x-[18px] gap-y-[28px]">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="rounded-[14px] bg-white overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)] animate-pulse">
+          <div key={index} className="rounded-[24px] bg-white border border-[#e7e7e7] overflow-hidden animate-pulse">
             <div className="aspect-square bg-gray-100" />
             <div className="p-5 space-y-3">
               <div className="flex justify-between">
@@ -127,7 +120,7 @@ export function RetailerCatalogueGrid({ designs, isLoading, onArchiveToggle }) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[repeat(3,256px)] gap-x-[18px] gap-y-[28px]">
       {designs.map((design) => (
         <DesignCard
           key={design.id}

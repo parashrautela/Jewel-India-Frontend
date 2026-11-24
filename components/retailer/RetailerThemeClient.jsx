@@ -216,6 +216,9 @@ function ClaimModal({ theme, onClose, onClaimSuccess }) {
   );
 }
 
+// Translucent tag on each theme card (Figma: Store Theme).
+const BADGE = "inline-flex items-center gap-[6px] bg-black/20 backdrop-blur-sm border border-white/50 text-white text-[12px] font-medium tracking-[0.5px] uppercase rounded-[4px] px-[8px] py-[4px]";
+
 export default function RetailerThemeClient({ initialTheme = "indian" }) {
   const { wallet } = useCredits();
   const [selectedTheme, setSelectedTheme] = useState(() => {
@@ -235,17 +238,17 @@ export default function RetailerThemeClient({ initialTheme = "indian" }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5] px-6 md:px-10 py-10">
+    <div className="min-h-screen px-6 lg:pl-0 lg:pr-9 pt-[27px] pb-10">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-[22px] font-bold text-[#111111] leading-tight">Store Theme</h1>
-        <p className="text-[13px] text-[#6B7280] mt-1">
+      <div className="mb-[28px] flex flex-col gap-[4px]">
+        <h1 className="text-[24px] leading-[32px] font-bold text-[#0f172b] tracking-[0.07px]">Store Theme</h1>
+        <p className="text-[14px] leading-[20px] font-medium text-[#62748e] tracking-[-0.15px]">
           Select the store theme you think justifies your product and vision
         </p>
       </div>
 
       {/* Theme Grid — 1 col mobile, 2 col tablet+ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-[780px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[repeat(2,387px)] gap-x-[36px] gap-y-[33px] max-w-[810px]">
         {THEMES.map((theme) => {
           const isSelected = selectedTheme === theme.id;
 
@@ -259,12 +262,10 @@ export default function RetailerThemeClient({ initialTheme = "indian" }) {
                   setClaimModal(theme);
                 }
               }}
-              className="relative rounded-[18px] overflow-hidden text-left group transition-all duration-300 focus:outline-none cursor-pointer"
+              className="relative rounded-[10px] overflow-hidden text-left group transition-all duration-300 focus:outline-none cursor-pointer border border-[#d4d4d4]"
               style={{
-                aspectRatio: "4/5",
-                boxShadow: isSelected
-                  ? "0 0 0 3px #111, 0 12px 32px rgba(0,0,0,0.18)"
-                  : "0 4px 20px rgba(0,0,0,0.10)",
+                aspectRatio: "387/474",
+                boxShadow: isSelected ? "0 4px 8px rgba(0,0,0,0.25)" : "none",
               }}
             >
               {/* Background image */}
@@ -276,33 +277,33 @@ export default function RetailerThemeClient({ initialTheme = "indian" }) {
               {/* Dark bottom gradient — same vibe as the modal */}
               <div
                 className="absolute inset-0"
-                style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.08) 50%, transparent 75%)" }}
+                style={{ background: "linear-gradient(to top, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 28%, rgba(255,255,255,0) 55%)" }}
               />
 
               {/* Top badge: SELECTED, CLAIM, or LOCKED */}
-              <div className="absolute top-4 left-4 z-10">
+              <div className="absolute top-[24px] left-[24px] z-10">
                 {theme.locked && wallet?.mode !== "daily" ? (
-                  <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] font-bold tracking-widest uppercase rounded-full px-3 py-1.5">
+                  <span className={BADGE}>
                     <LockIcon />
                     Locked
                   </span>
                 ) : isSelected ? (
-                  <span className="inline-flex items-center gap-1.5 bg-white text-[#111] text-[10px] font-bold tracking-widest uppercase rounded-full px-3 py-1.5 shadow-sm">
-                    ✓ Selected
+                  <span className={BADGE}>
+                    Selected
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-[10px] font-extrabold tracking-widest uppercase rounded-full px-3.5 py-1.5 shadow-md shadow-amber-950/40 border border-amber-400/20 hover:scale-105 transition-transform duration-300">
-                    ✦ Claim
+                  <span className={BADGE}>
+                    Claim
                   </span>
                 )}
               </div>
 
               {/* Bottom text */}
-              <div className="absolute bottom-0 left-0 right-0 z-10 p-5 text-center">
-                <h2 className="font-serif text-white text-[28px] md:text-[32px] leading-tight mb-1">
+              <div className="absolute bottom-0 left-0 right-0 z-10 px-[24px] pb-[28px] text-center">
+                <p className="text-black text-[44px] leading-[1.05] mb-[10px]" style={{ fontFamily: '"Gilda Display", serif' }}>
                   {theme.name}
-                </h2>
-                <p className="text-white/70 text-[12px] leading-relaxed">
+                </p>
+                <p className="text-[#1f1f1f] text-[14px] leading-[20px] font-medium">
                   {theme.subtext}
                 </p>
               </div>

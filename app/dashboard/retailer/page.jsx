@@ -4,7 +4,6 @@ import DashboardStats from "../../../components/retailer/DashboardStats";
 import EmployeePortalCard from "../../../components/retailer/EmployeePortalCard";
 import DashboardDirectory from "../../../components/retailer/DashboardDirectory";
 import Link from "next/link";
-import Image from "next/image";
 
 export default async function RetailerDashboardPage() {
   const user = await getAuthUser();
@@ -26,19 +25,21 @@ export default async function RetailerDashboardPage() {
     recentEmployees = dashboardData.recentEmployees;
   }
 
+  const actionCard = "bg-white border border-[#e2e8f0] rounded-[24px] p-[25px] h-[121px] flex items-center gap-[16px] hover:border-[#cbd5e1] transition-colors";
+
   return (
-    <div className="flex flex-col min-h-screen bg-[#F0F2F5]">
-      <div className="flex-1 w-full max-w-5xl mx-auto px-6 py-8">
-        <div className="flex flex-col gap-6">
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-1 w-full max-w-[895px] px-6 lg:pl-0 lg:pr-9 pt-[27px] pb-10">
+        <div className="flex flex-col">
 
           {/* Header */}
-          <div>
-            <h1 className="text-[28px] font-bold text-[#111111] tracking-tight mb-0.5">Dashboard</h1>
-            <p className="text-[14px] text-[#6B7280]">Welcome back! Here&apos;s your store overview</p>
+          <div className="flex flex-col gap-[4px]">
+            <h1 className="text-[24px] leading-[32px] font-bold text-[#0f172b] tracking-[0.07px]">Dashboard</h1>
+            <p className="text-[14px] leading-[20px] font-medium text-[#62748e] tracking-[-0.15px]">Welcome back! Here&apos;s your store overview</p>
           </div>
 
-          {/* Row 1: 3 stat cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+          {/* Row 1: stat cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[240px_240px_367px] gap-[24px] mt-[28px]">
             <DashboardStats
               employeesCount={employeesCount}
               activeEmployeesCount={activeEmployeesCount}
@@ -50,45 +51,32 @@ export default async function RetailerDashboardPage() {
             <EmployeePortalCard />
           </div>
 
-          {/* Row 2: Quick Action Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:max-w-[66%]">
-            <Link
-              href="?modal=add-employee"
-              scroll={false}
-              className="bg-white rounded-[20px] p-5 flex flex-row items-center gap-4 shadow-[0_2px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all min-h-[100px]"
-            >
-              <div className="w-[52px] h-[52px] rounded-[14px] bg-[#EEF2FF] flex items-center justify-center shrink-0">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/>
-                </svg>
+          {/* Row 2: quick actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mt-[28px] max-w-[804px]">
+            <Link href="?modal=add-employee" scroll={false} className={actionCard}>
+              <div className="w-[70px] h-[71px] rounded-[10px] bg-[#dbeafe] flex items-center justify-center shrink-0">
+                <img src="/retailer-admin/add-employee.svg" alt="" width={24} height={24} />
               </div>
-              <div className="flex flex-col gap-1">
-                <h3 className="text-[15px] font-bold text-[#111111]">Add New Employee</h3>
-                <p className="text-[13px] text-[#6B7280] leading-snug">Create employee accounts and login credentials</p>
+              <div className="flex flex-col gap-[4px]">
+                <h3 className="text-[18px] leading-[27px] font-bold text-[#0f172b] tracking-[-0.44px]">Add New Employee</h3>
+                <p className="text-[14px] leading-[20px] text-[#62748e] tracking-[-0.15px] max-w-[233px]">Create employee accounts and login credentials</p>
               </div>
             </Link>
 
-            <Link
-              href="/dashboard/retailer/catalogue"
-              className="bg-white rounded-[20px] p-5 flex flex-row items-center gap-4 shadow-[0_2px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all min-h-[100px]"
-            >
-              <div className="w-[52px] h-[52px] rounded-[14px] bg-[#F5F3FF] flex items-center justify-center shrink-0">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9333EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-                </svg>
+            <Link href="/dashboard/retailer/catalogue/upload" className={actionCard}>
+              <div className="w-[70px] h-[71px] rounded-[10px] bg-[#f3e8ff] flex items-center justify-center shrink-0">
+                <img src="/retailer-admin/upload-design.svg" alt="" width={24} height={24} />
               </div>
-              <div className="flex flex-col gap-1">
-                <h3 className="text-[15px] font-bold text-[#111111]">Upload Design</h3>
-                <p className="text-[13px] text-[#6B7280] leading-snug">Add new jewellery designs to your private catalogue</p>
+              <div className="flex flex-col gap-[4px]">
+                <h3 className="text-[18px] leading-[27px] font-bold text-[#0f172b] tracking-[-0.44px]">Upload Design</h3>
+                <p className="text-[14px] leading-[20px] text-[#62748e] tracking-[-0.15px] max-w-[279px]">Add new jewellery designs to your private catalogue</p>
               </div>
             </Link>
           </div>
 
           {/* Row 3: Employee Directory */}
-          <div className="w-full bg-white rounded-[20px] shadow-[0_2px_12px_rgba(0,0,0,0.05)] overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-50">
-              <h2 className="text-[16px] font-bold text-[#111111]">Employee Directory</h2>
-            </div>
+          <div className="w-full max-w-[809px] bg-white border border-[#e2e8f0] rounded-[24px] mt-[28px] px-[24px] pt-[20px] pb-[8px]">
+            <h2 className="text-[18px] leading-[27px] font-bold text-[#0f172b] tracking-[-0.44px] pb-[20px]">Employee Directory</h2>
             <DashboardDirectory initialEmployees={recentEmployees} />
           </div>
 

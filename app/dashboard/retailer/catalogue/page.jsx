@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { RetailerCatalogueGrid } from "../../../../components/retailer/RetailerCatalogueGrid";
 
 const designsCache = {
@@ -94,33 +93,26 @@ export default function RetailerCataloguePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen relative bg-[#FAFAFA]">
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-10 py-10 flex flex-col gap-8">
-        
+    <div className="flex flex-col min-h-screen relative">
+      <main className="flex-1 w-full max-w-[895px] px-6 lg:pl-0 lg:pr-9 pt-[27px] pb-10 flex flex-col gap-[28px]">
+
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-[clamp(28px,3vw,32px)] font-extrabold text-[#111827] tracking-tight">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+          <div className="flex flex-col gap-[4px]">
+            <h1 className="text-[24px] leading-[32px] font-bold text-[#0f172b] tracking-[0.07px]">
               Catalogue ({totals.total})
             </h1>
-            <p className="text-[14px] text-[#6B7280]">
+            <p className="text-[14px] leading-[20px] font-medium text-[#62748e] tracking-[-0.15px]">
               Welcome back! look what all you have to offer
             </p>
           </div>
-          
+
           <Link
             href="/dashboard/retailer/catalogue/upload"
-            className="flex items-center justify-center gap-2 bg-[#111827] text-white font-bold rounded-[10px] px-6 py-3 hover:bg-black transition-colors w-fit h-[48px]"
+            className="flex items-center justify-center gap-[8px] bg-[#030213] text-white rounded-[8px] px-[12px] h-[36px] mt-[11px] hover:bg-black transition-colors w-fit"
           >
-            <Image 
-              src="https://res.cloudinary.com/dcs0vuzwg/image/upload/v1777306236/retailerProfile_UPLOADblack_tvem8p.svg" 
-              alt="Upload" 
-              width={16} 
-              height={16} 
-              loading="lazy"
-              className="invert brightness-0"
-            />
-            <span className="text-[14px]">Upload Design</span>
+            <img src="/retailer-admin/upload-white.svg" alt="" width={16} height={16} />
+            <span className="text-[14px] font-medium tracking-[-0.15px]">Upload Design</span>
           </Link>
         </div>
 

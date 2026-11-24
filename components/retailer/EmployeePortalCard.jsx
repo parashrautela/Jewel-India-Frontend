@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { ArrowCircle, statCard, statTitle } from "./DashboardStats";
 
 /**
  * EmployeePortalCard — Displayed on the retailer dashboard.
@@ -46,48 +47,17 @@ export default function EmployeePortalCard() {
   };
 
   return (
-    <div
-      className="bg-white rounded-[20px] p-5 w-full flex flex-col justify-between shadow-[0_2px_12px_rgba(0,0,0,0.05)] h-[160px]"
-    >
-      {/* Header Row */}
+    <div className={statCard}>
       <div className="flex items-start justify-between">
-        <h3 className="text-[15px] font-medium text-[#111111]">
-          Employee portal
-        </h3>
-
-        {/* Open in new tab button */}
-        <button
-          onClick={handleOpen}
-          className="w-[44px] h-[44px] rounded-full bg-black flex items-center justify-center hover:bg-gray-900 transition-colors shrink-0"
-          title="Open employee login page"
-          aria-label="Open employee login page in new tab"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#fff"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="7" y1="17" x2="17" y2="7" />
-            <polyline points="7 7 17 7 17 17" />
-          </svg>
-        </button>
+        <h3 className={statTitle}>Employee portal</h3>
+        <ArrowCircle onClick={handleOpen} label="Open employee login page in new tab" />
       </div>
 
-      {/* Content Area */}
       <div>
-        {/* URL Copy Box */}
-        <div
-          className="flex items-center justify-between gap-3 bg-[#FCFCFC] rounded-[12px] px-4 py-2.5 mb-2 border border-[#F0F0F0]"
-        >
-          <span className="text-[14px] font-semibold text-[#111111] truncate">
+        <div className="flex items-center justify-between gap-3 h-[56px] max-w-[304px] bg-[#fafafa] border border-[#ededed] rounded-[8px] pl-[21px] pr-[18px] -ml-[3px]">
+          <span className="text-[16px] font-semibold text-black truncate">
             {displayUrl || "Loading..."}
           </span>
-
           <button
             onClick={handleCopy}
             className="shrink-0 transition-opacity hover:opacity-70"
@@ -95,29 +65,15 @@ export default function EmployeePortalCard() {
             aria-label="Copy employee portal URL"
           >
             {copied ? (
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#16A34A"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="9.6" y="9.6" width="10.8" height="10.8" rx="2.4" stroke="#111111" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M14.4 9.6V6C14.4 4.67452 13.3255 3.6 12 3.6H6C4.67452 3.6 3.6 4.67452 3.6 6V12C3.6 13.3255 4.67452 14.4 6 14.4H9.6" stroke="#111111" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <img src="/retailer-admin/copy.svg" alt="" width={24} height={24} />
             )}
           </button>
         </div>
-
-        {/* Description */}
-        <p className="text-[12px] text-[#9CA3AF] leading-snug">
+        <p className="text-[14px] font-medium tracking-[-0.28px] text-[#999] mt-[10px] truncate">
           Employee access for catalogue and order management.
         </p>
       </div>
